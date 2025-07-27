@@ -33,41 +33,11 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-blue-50">
-      {/* Left Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
-        {/* Logo */}
-        <div className="p-6 border-b">
-          <h1 className="text-xl font-bold text-gray-800">YOURLOGO</h1>
-        </div>
-        
-        {/* Navigation Menu */}
-        <nav className="mt-6">
-          {menuItems.map((item) => (
-            <div
-              key={item.name}
-              onClick={() => setActiveMenu(item.name)}
-              className={`flex items-center px-6 py-3 cursor-pointer transition-colors ${
-                activeMenu === item.name
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <span className="mr-3">{item.icon}</span>
-              <span className="font-medium">{item.name}</span>
-            </div>
-          ))}
-        </nav>
-      </div>
-
+    <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">
-              Hotel Booking Management Dashboard
-            </h1>
+      <main className="flex-1 px-8 py-10">
+        <h1 className="text-3xl font-bold text-[#222] mb-2">대시보드</h1>
+        <p className="text-[#888] mb-8">호텔 예약 관리 시스템의 전체 현황을 확인할 수 있습니다.</p>
             
             {/* Search and Actions */}
             <div className="flex items-center justify-between mb-6">
@@ -269,10 +239,9 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-export default Dashboard;
+  export default Dashboard;

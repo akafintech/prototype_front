@@ -1,5 +1,5 @@
 // pages/reviews.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 const reviews = [
@@ -46,6 +46,10 @@ export default function Reviews() {
     const [editTextFor, setEditTextFor] = useState({});
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteReviewId, setDeleteReviewId] = useState(null);
+    const [typingText, setTypingText] = useState({});
+    const [isTyping, setIsTyping] = useState({});
+    const [previewText, setPreviewText] = useState({});
+    const [isPreviewing, setIsPreviewing] = useState({});
 
     // 영어 감지 함수
     const isEnglishReview = (comment) => {
@@ -109,15 +113,78 @@ export default function Reviews() {
     const handleGenerateReply = (reviewId) => {
         setShowOptionsFor(reviewId);
         setSelectedVersionFor(prev => ({ ...prev, [reviewId]: null }));
+        
+        // 모든 버전의 내용을 동시에 타이핑 애니메이션으로 표시
+        const versions = koreanReplyVersions;
+        versions.forEach((version) => {
+            previewTypeText(reviewId, version.id, version.content);
+        });
+    };
+
+    // 타이핑 애니메이션 함수
+    const typeText = (reviewId, fullText, onComplete) => {
+        setIsTyping(prev => ({ ...prev, [reviewId]: true }));
+        setTypingText(prev => ({ ...prev, [reviewId]: "" }));
+        
+        let currentIndex = 0;
+        const interval = setInterval(() => {
+            if (currentIndex <= fullText.length) {
+                setTypingText(prev => ({ 
+                    ...prev, 
+                    [reviewId]: fullText.slice(0, currentIndex) 
+                }));
+                currentIndex++;
+            } else {
+                clearInterval(interval);
+                setIsTyping(prev => ({ ...prev, [reviewId]: false }));
+                if (onComplete) onComplete();
+            }
+        }, 50); // 타이핑 속도 (밀리초)
+    };
+
+    // 미리보기 타이핑 애니메이션 함수
+    const previewTypeText = (reviewId, versionId, fullText) => {
+        setIsPreviewing(prev => ({ ...prev, [`${reviewId}-${versionId}`]: true }));
+        setPreviewText(prev => ({ ...prev, [`${reviewId}-${versionId}`]: "" }));
+        
+        let currentIndex = 0;
+        const interval = setInterval(() => {
+            if (currentIndex <= fullText.length) {
+                setPreviewText(prev => ({ 
+                    ...prev, 
+                    [`${reviewId}-${versionId}`]: fullText.slice(0, currentIndex) 
+                }));
+                currentIndex++;
+            } else {
+                clearInterval(interval);
+                // 미리보기는 자동으로 멈추지 않고 계속 유지
+            }
+        }, 30); // 미리보기는 더 빠른 속도
+    };
+
+    // 미리보기 중지 함수
+    const stopPreview = (reviewId, versionId) => {
+        setIsPreviewing(prev => ({ ...prev, [`${reviewId}-${versionId}`]: false }));
+        setPreviewText(prev => ({ ...prev, [`${reviewId}-${versionId}`]: "" }));
+    };
+
+    // 모든 미리보기 중지 함수
+    const stopAllPreviews = (reviewId) => {
+        const versions = koreanReplyVersions;
+        versions.forEach(version => {
+            stopPreview(reviewId, version.id);
+        });
     };
 
     const handleSelectVersion = (reviewId, version) => {
         const review = reviewsData.find(r => r.id === reviewId);
-        const isEnglish = isEnglishReview(review.comment);
         
         setSelectedVersionFor(prev => ({ ...prev, [reviewId]: version.id }));
         
-        // 수정 모드인 경우 editTextFor를 업데이트, 아닌 경우 reviewsData를 업데이트
+        // 모든 미리보기 중지
+        stopAllPreviews(reviewId);
+        
+        // 즉시 텍스트 표시 (번역하지 않고 원본 한국어로 표시)
         if (editModeFor[reviewId]) {
             setEditTextFor(prev => ({ ...prev, [reviewId]: version.content }));
         } else {
@@ -145,8 +212,8 @@ export default function Reviews() {
             const isEnglish = isEnglishReview(review.comment);
             let finalReply = review.reply;
             
-            // 영어 리뷰인 경우 한국어 답변을 영어로 번역
-            if (isEnglish) {
+            // 영어 리뷰인 경우 한국어 답변을 영어로 번역 (AI 답변이든 사용자 직접 입력이든)
+            if (isEnglish && review.reply) {
                 finalReply = translateToEnglish(review.reply);
                 console.log("Original Korean reply:", review.reply);
                 console.log("Translated English reply:", finalReply);
@@ -188,8 +255,8 @@ export default function Reviews() {
             const isEnglish = isEnglishReview(review.comment);
             let finalReply = editedText;
             
-            // 영어 리뷰인 경우 한국어 답변을 영어로 번역
-            if (isEnglish) {
+            // 영어 리뷰인 경우 한국어 답변을 영어로 번역 (AI 답변이든 사용자 직접 입력이든)
+            if (isEnglish && editedText) {
                 finalReply = translateToEnglish(editedText);
                 console.log("Original Korean reply (edit):", editedText);
                 console.log("Translated English reply (edit):", finalReply);
@@ -360,39 +427,59 @@ export default function Reviews() {
                                             <h5 className="font-medium text-[#222] mb-3">
                                                 {isEnglish ? "한국어 답변 버전을 선택해주세요 (자동으로 영어로 번역됩니다):" : "AI 답변 버전을 선택해주세요:"}
                                             </h5>
-                                            <div className="space-y-2">
-                                                {replyVersions.map((version) => (
-                                                    <button
-                                                        key={version.id}
-                                                        onClick={() => handleSelectVersion(review.id, version)}
-                                                        className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                                                            selectedVersionFor[review.id] === version.id
-                                                                ? 'border-blue-500 bg-blue-50'
-                                                                : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
-                                                        }`}
-                                                    >
-                                                        <div className="font-medium text-[#222] mb-1">{version.title}</div>
-                                                        <div className="text-sm text-gray-600 line-clamp-2">{version.content}</div>
-                                                    </button>
-                                                ))}
-                                            </div>
+                                                                                         <div className="space-y-2">
+                                                 {replyVersions.map((version) => (
+                                                     <button
+                                                         key={version.id}
+                                                                                                                   onClick={() => handleSelectVersion(review.id, version)}
+                                                         className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                                                             selectedVersionFor[review.id] === version.id
+                                                                 ? 'border-blue-500 bg-blue-50'
+                                                                 : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                                                         }`}
+                                                     >
+                                                         <div className="font-medium text-[#222] mb-1">{version.title}</div>
+                                                                                                                                                                             <div className="text-sm text-gray-600 min-h-[3rem] whitespace-pre-wrap">
+                                                              {isPreviewing[`${review.id}-${version.id}`]
+                                                                  ? previewText[`${review.id}-${version.id}`] || ""
+                                                                  : version.content
+                                                              }
+                                                          </div>
+                                                         
+                                                     </button>
+                                                 ))}
+                                             </div>
                                         </div>
                                     )}
 
-                                    <textarea
-                                        className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
-                                        placeholder={isEnglish ? "한국어 답변이 여기에 표시됩니다 (등록 시 영어로 자동 번역)" : "AI가 생성한 답변을 여기에 표시합니다."}
-                                        value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
-                                        readOnly={!editModeFor[review.id]}
-                                        onChange={(e) => editModeFor[review.id] && setEditTextFor(prev => ({ ...prev, [review.id]: e.target.value }))}
-                                    />
+                                                                         <textarea
+                                         className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
+                                         placeholder={isEnglish ? "한국어 답변이 여기에 표시됩니다 (등록 시 영어로 자동 번역)" : "AI가 생성한 답변을 여기에 표시합니다."}
+                                         value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
+                                         readOnly={false}
+                                                                                   onChange={(e) => {
+                                              const newValue = e.target.value;
+                                              
+                                              if (editModeFor[review.id]) {
+                                                  // 수정 모드에서는 원본 한국어 텍스트를 저장
+                                                  setEditTextFor(prev => ({ ...prev, [review.id]: newValue }));
+                                              } else {
+                                                  // 일반 모드에서는 원본 텍스트를 저장 (번역하지 않음)
+                                                  setReviewsData(prev => prev.map(r => 
+                                                      r.id === review.id 
+                                                          ? { ...r, reply: newValue }
+                                                          : r
+                                                  ));
+                                              }
+                                          }}
+                                     />
                                     
-                                    {selectedVersionFor[review.id] && !editModeFor[review.id] && (
-                                        <div className="mb-3 text-sm text-blue-600">
-                                            {isEnglish ? "선택된 버전 (영어로 번역됨): " : "선택된 버전: "}
-                                            {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title}
-                                        </div>
-                                    )}
+                                                                         {selectedVersionFor[review.id] && !editModeFor[review.id] && (
+                                         <div className="mb-3 text-sm text-blue-600">
+                                             {isEnglish ? "선택된 버전 (답변달기 시 영어로 번역됨): " : "선택된 버전: "}
+                                             {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title}
+                                         </div>
+                                     )}
 
                                     <div className="flex justify-end gap-3">
                                         {!editModeFor[review.id] && (

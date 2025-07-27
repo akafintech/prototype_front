@@ -29,7 +29,7 @@ export default function MyInfo() {
             <label className="text-sm font-medium text-[#222] w-32">현재 비밀번호</label>
             <div className="flex-1 ml-4 flex gap-3">
               <Input type="password" placeholder="현재 비밀번호를 입력해주세요"/>
-              <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 whitespace-nowrap">
+              <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg hover:bg-[#d1d8e0] whitespace-nowrap">
                 변경하기
               </button>
             </div>
@@ -73,7 +73,7 @@ export default function MyInfo() {
                 placeholder="추천인 코드"
                 className="flex-1 px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
               />
-              <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 whitespace-nowrap">
+              <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg hover:bg-[#d1d8e0] whitespace-nowrap">
                 생성하기
               </button>
             </div>
@@ -84,16 +84,16 @@ export default function MyInfo() {
             <input
               type="checkbox"
               id="newsletter"
-              className="w-4 h-4 text-orange-500 border-[#E5E7EB] rounded focus:ring-orange-500"
+              className="w-4 h-4 text-[#e8edf2] border-[#E5E7EB] rounded focus:ring-[#e8edf2]"
             />
             <label htmlFor="newsletter" className="ml-3 text-sm text-[#222]">
-              댓글몽의 다양한 소식과 알찬 정보를 받아볼게요
+              다양한 소식과 알찬 정보를 받아볼게요
             </label>
           </div>
 
           {/* Save Changes Button */}
           <div className="pt-6">
-            <button className="w-full py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium">
+            <button className="w-full py-3 bg-[#e8edf2] text-black rounded-lg hover:bg-[#d1d8e0] font-medium">
               변경사항 저장하기
             </button>
           </div>

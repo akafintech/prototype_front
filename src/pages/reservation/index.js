@@ -45,48 +45,39 @@ function renderRow(row, idx) {
 export default function DepthFrameWrapper() {
   return (
     <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
-      <div className="w-full flex-1 grow flex flex-col items-start relative">
-        {/* 헤더 */}
-        <div className="flex flex-wrap items-start justify-around gap-3 p-4 relative self-stretch w-full flex-[0_0_auto]">
-          <div className="flex-col w-72 flex items-start relative">
-            <div className="self-stretch font-bold text-[#0c141c] text-2xl sm:text-3xl md:text-4xl leading-8 sm:leading-10 [font-family:'Inter',Helvetica] tracking-[0]">
-              예약 현황
+      {/* Main Content */}
+      <main className="flex-1 px-8 py-10">
+        <h1 className="text-3xl font-bold text-[#222] mb-2">예약관리</h1>
+        <p className="text-[#888] mb-8">호텔 예약 현황을 관리하고 확인할 수 있습니다.</p>
+
+        {/* 검색 및 필터 */}
+        <div className="bg-white rounded-xl shadow p-6 mb-6">
+          <h2 className="text-lg font-bold text-[#222] mb-4">예약 검색</h2>
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="검색하기"
+                className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
+              />
             </div>
+            <button className="px-6 py-2 bg-[#e8edf2] text-black rounded-lg font-medium">
+              검색
+            </button>
           </div>
         </div>
 
-        {/* 검색 */}
-        <div className="flex flex-col items-start px-4 py-3 relative self-stretch w-full flex-[0_0_auto]">
-          <div className="flex-col min-w-40 h-12 self-stretch w-full flex items-start relative">
-            <div className="items-start self-stretch w-full rounded-lg flex relative flex-1 grow">
-              <div className="inline-flex items-start justify-center pl-4 pr-0 py-0 self-stretch bg-[#e8edf2] rounded-l-lg relative flex-[0_0_auto]">
-                <div className="relative flex-1 grow h-6">
-                  <img
-                    className="absolute w-5 h-5 top-0.5 left-0.5"
-                    alt="Vector"
-                    src="https://c.animaapp.com/WM4NmW8c/img/vector---0-7.svg"
-                  />
-                </div>
-              </div>
-              <div className="flex items-start pl-2 pr-4 py-2 relative flex-1 self-stretch grow bg-[#e8edf2] rounded-r-lg overflow-hidden">
-                <div className="w-fit font-normal text-[#4c7299] text-base leading-6 whitespace-nowrap relative [font-family:'Inter',Helvetica] tracking-[0]">
-                  검색하기
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 테이블 */}
-        <div className="flex flex-col items-start px-4 py-3 relative self-stretch w-full flex-[0_0_auto]">
-          <div className="self-stretch w-full flex-[0_0_auto] bg-[#f7f9fc] rounded-lg overflow-hidden border border-solid border-[#cedbe8]">
-            <table className="w-full table-fixed">
+        {/* 예약 테이블 */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-bold text-[#222] mb-4">예약 현황</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead>
-                <tr className="bg-[#f7f9fc]">
+                <tr className="border-b">
                   {columns.map((col, i) => (
                     <th
                       key={i}
-                      className="px-4 py-3 font-medium text-[#0c141c] text-sm text-center whitespace-nowrap"
+                      className="px-4 py-3 font-medium text-[#222] text-sm text-left"
                     >
                       {col}
                     </th>
@@ -99,7 +90,7 @@ export default function DepthFrameWrapper() {
             </table>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
