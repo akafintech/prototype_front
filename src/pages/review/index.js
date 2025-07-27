@@ -1,12 +1,14 @@
 // pages/reviews.js
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
 const reviews = [
     {
         id: 1,
         name: "dk**",
-        date: "June 15, 2024",
+        date: "2024-06-15",
         rating: 5,
         comment: "Exceptional service and a truly memorable stay. The staff went above and beyond to ensure our comfort. Highly recommend!",
         thumbsUp: 12,
@@ -16,7 +18,7 @@ const reviews = [
     {
         id: 2,
         name: "li**",
-        date: "May 20, 2024",
+        date: "2024-05-20",
         rating: 4,
         comment: "가성비 좋아요. 다음에도 오고싶어요.",
         thumbsUp: 8,
@@ -26,18 +28,49 @@ const reviews = [
     {
         id: 3,
         name: "yw**",
-        date: "April 10, 2024",
+        date: "2024-04-10",
         rating: 3,
         comment: "The stay was decent, but there were a few issues with the room service. The staff was friendly, but the response time could be improved.",
         thumbsUp: 5,
         thumbsDown: 3,
         reply: ""
+    },
+    {
+        id: 4,
+        name: "park**",
+        date: "2024-06-20",
+        rating: 5,
+        comment: "정말 만족스러운 숙박이었습니다. 깨끗하고 편안했어요.",
+        thumbsUp: 15,
+        thumbsDown: 0,
+        reply: ""
+    },
+    {
+        id: 5,
+        name: "kim**",
+        date: "2024-05-15",
+        rating: 2,
+        comment: "기대했던 것보다는 별로였습니다. 개선이 필요해요.",
+        thumbsUp: 2,
+        thumbsDown: 8,
+        reply: ""
+    },
+    {
+        id: 6,
+        name: "lee**",
+        date: "2024-04-25",
+        rating: 1,
+        comment: "최악입니다. 다시는 오지 않겠습니다.",
+        thumbsUp: 0,
+        thumbsDown: 12,
+        reply: ""
     }
 ];
 
-export default function Reviews() {
+function ReviewIndex({ currentUser }) {
     const router = useRouter();
     const [reviewsData, setReviewsData] = useState(reviews);
+    const [filteredReviews, setFilteredReviews] = useState(reviews);
     const [showOptionsFor, setShowOptionsFor] = useState(null);
     const [selectedVersionFor, setSelectedVersionFor] = useState({});
     const [showModal, setShowModal] = useState(false);
@@ -50,6 +83,14 @@ export default function Reviews() {
     const [isTyping, setIsTyping] = useState({});
     const [previewText, setPreviewText] = useState({});
     const [isPreviewing, setIsPreviewing] = useState({});
+    
+    // 새로운 상태 추가
+    const [showRatingDropdown, setShowRatingDropdown] = useState(false);
+    const [selectedRating, setSelectedRating] = useState("별점 전체");
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [searchKeyword, setSearchKeyword] = useState("");
 
     // 영어 감지 함수
     const isEnglishReview = (comment) => {
@@ -109,6 +150,52 @@ export default function Reviews() {
             content: "Thank you for your valuable review! We're glad you were satisfied. We'll repay you with better service. Please visit us again!"
         }
     ];
+
+    // 별점 옵션
+    const ratingOptions = [
+        "별점 전체",
+        "5점",
+        "4점", 
+        "3점",
+        "2점",
+        "1점"
+    ];
+
+    // 필터링 함수
+    const applyFilters = () => {
+        let filtered = [...reviewsData];
+
+        // 별점 필터링
+        if (selectedRating !== "별점 전체") {
+            const ratingValue = parseInt(selectedRating.replace("점", ""));
+            filtered = filtered.filter(review => review.rating === ratingValue);
+        }
+
+        // 날짜 범위 필터링
+        if (startDate && endDate) {
+            filtered = filtered.filter(review => {
+                const reviewDate = new Date(review.date);
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                return reviewDate >= start && reviewDate <= end;
+            });
+        }
+
+        // 검색어 필터링
+        if (searchKeyword.trim()) {
+            filtered = filtered.filter(review => 
+                review.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                review.comment.toLowerCase().includes(searchKeyword.toLowerCase())
+            );
+        }
+
+        setFilteredReviews(filtered);
+    };
+
+    // 필터 변경 시 자동 적용
+    useEffect(() => {
+        applyFilters();
+    }, [selectedRating, startDate, endDate, searchKeyword, reviewsData]);
 
     const handleGenerateReply = (reviewId) => {
         setShowOptionsFor(reviewId);
@@ -310,10 +397,30 @@ export default function Reviews() {
         setDeleteReviewId(null);
     };
 
+    // 별점 선택 핸들러
+    const handleRatingSelect = (rating) => {
+        setSelectedRating(rating);
+        setShowRatingDropdown(false);
+    };
+
+    // 검색어 변경 핸들러
+    const handleSearchChange = (e) => {
+        setSearchKeyword(e.target.value);
+    };
+
+    // 필터 초기화
+    const resetFilters = () => {
+        setSelectedRating("별점 전체");
+        setStartDate("");
+        setEndDate("");
+        setSearchKeyword("");
+    };
+
     return (
-        <div className="min-h-screen bg-[#F6F8FB] flex">
-            {/* Main Content */}
-            <main className="flex-1 px-8 py-10">
+        <Layout>
+            <div className="min-h-screen bg-[#F6F8FB] flex">
+                {/* Main Content */}
+                <main className="flex-1 px-8 py-10">
                 <h1 className="text-3xl font-bold text-[#222] mb-2">고객 리뷰</h1>
                 <p className="text-[#888] mb-8">고객 피드백을 관리하고 응답하여 서비스 품질을 향상시켜보세요.</p>
 
@@ -328,7 +435,7 @@ export default function Reviews() {
                                 ))}
                             </div>
                         </div>
-                        <div className="text-[#888]">150개 리뷰</div>
+                        <div className="text-[#888]">{filteredReviews.length}개 리뷰</div>
                     </div>
 
                     {/* Rating Distribution Chart */}
@@ -374,170 +481,249 @@ export default function Reviews() {
                                 type="text"
                                 placeholder="Search reviews by guest name or keywords"
                                 className="w-full pl-10 pr-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
+                                value={searchKeyword}
+                                onChange={handleSearchChange}
                             />
                         </div>
-                        <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg">별점 전체</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">정렬</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">오래된순</button>
+                        
+                        {/* 별점 드롭다운 */}
+                        <div className="relative">
+                            <button 
+                                className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg flex items-center gap-2"
+                                onClick={() => setShowRatingDropdown(!showRatingDropdown)}
+                            >
+                                {selectedRating}
+                                <span className="text-sm">▼</span>
+                            </button>
+                            {showRatingDropdown && (
+                                <div className="absolute top-full left-0 mt-1 bg-white border border-[#E5E7EB] rounded-lg shadow-lg z-10 min-w-[120px]">
+                                    {ratingOptions.map((option) => (
+                                        <button
+                                            key={option}
+                                            className="w-full px-4 py-2 text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+                                            onClick={() => handleRatingSelect(option)}
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* 기간 선택 */}
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222] cursor-pointer"
+                                placeholder="시작일"
+                            />
+                            <span className="text-[#888]">~</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222] cursor-pointer"
+                                placeholder="종료일"
+                            />
+                        </div>
+                        
+                        <button 
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={resetFilters}
+                        >
+                            초기화
+                        </button>
                     </div>
+
+                    {/* 필터 결과 표시 */}
+                    {(selectedRating !== "별점 전체" || startDate || endDate || searchKeyword) && (
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <div className="text-sm text-blue-700">
+                                <strong>적용된 필터:</strong>
+                                {selectedRating !== "별점 전체" && <span className="ml-2 bg-blue-200 px-2 py-1 rounded">{selectedRating}</span>}
+                                {(startDate || endDate) && (
+                                    <span className="ml-2 bg-blue-200 px-2 py-1 rounded">
+                                        {startDate} ~ {endDate || "현재"}
+                                    </span>
+                                )}
+                                {searchKeyword && <span className="ml-2 bg-blue-200 px-2 py-1 rounded">검색: {searchKeyword}</span>}
+                                <span className="ml-2 text-blue-600">총 {filteredReviews.length}개 리뷰</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Individual Reviews List */}
                 <div className="space-y-4">
-                    {reviewsData.map((review) => {
-                        const isEnglish = isEnglishReview(review.comment);
-                        // 영어 리뷰인 경우에도 한국어 답변 옵션을 보여줌
-                        const replyVersions = koreanReplyVersions;
-                        
-                        return (
-                            <div key={review.id} className="bg-white rounded-xl shadow p-6">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="font-semibold text-[#222]">{review.name}</h3>
-                                        <p className="text-sm text-[#888]">{review.date}</p>
-                                    </div>
-                                    <div className="flex">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <span
-                                                key={star}
-                                                className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                                            >
-                                                ★
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                                <p className="text-[#222] mb-4">{review.comment}</p>
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[#888]">👍</span>
-                                        <span className="text-sm text-[#888]">{review.thumbsUp}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[#888]">👎</span>
-                                        <span className="text-sm text-[#888]">{review.thumbsDown}</span>
-                                    </div>
-                                </div>
-
-                                {/* AI Reply Section for each review */}
-                                <div className="border-t pt-4">
-                                    {/* AI Reply Options */}
-                                    {(showOptionsFor === review.id || editModeFor[review.id]) && (
-                                        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                                            <h5 className="font-medium text-[#222] mb-3">
-                                                {isEnglish ? "한국어 답변 버전을 선택해주세요 (자동으로 영어로 번역됩니다):" : "AI 답변 버전을 선택해주세요:"}
-                                            </h5>
-                                                                                         <div className="space-y-2">
-                                                 {replyVersions.map((version) => (
-                                                     <button
-                                                         key={version.id}
-                                                                                                                   onClick={() => handleSelectVersion(review.id, version)}
-                                                         className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                                                             selectedVersionFor[review.id] === version.id
-                                                                 ? 'border-blue-500 bg-blue-50'
-                                                                 : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
-                                                         }`}
-                                                     >
-                                                         <div className="font-medium text-[#222] mb-1">{version.title}</div>
-                                                                                                                                                                             <div className="text-sm text-gray-600 min-h-[3rem] whitespace-pre-wrap">
-                                                              {isPreviewing[`${review.id}-${version.id}`]
-                                                                  ? previewText[`${review.id}-${version.id}`] || ""
-                                                                  : version.content
-                                                              }
-                                                          </div>
-                                                         
-                                                     </button>
-                                                 ))}
-                                             </div>
+                    {filteredReviews.length === 0 ? (
+                        <div className="bg-white rounded-xl shadow p-8 text-center">
+                            <div className="text-gray-400 text-lg mb-2">🔍</div>
+                            <p className="text-gray-600">조건에 맞는 리뷰가 없습니다.</p>
+                            <button 
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                onClick={resetFilters}
+                            >
+                                필터 초기화
+                            </button>
+                        </div>
+                    ) : (
+                        filteredReviews.map((review) => {
+                            const isEnglish = isEnglishReview(review.comment);
+                            // 영어 리뷰인 경우에도 한국어 답변 옵션을 보여줌
+                            const replyVersions = koreanReplyVersions;
+                            
+                            return (
+                                <div key={review.id} className="bg-white rounded-xl shadow p-6">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 className="font-semibold text-[#222]">{review.name}</h3>
+                                            <p className="text-sm text-[#888]">{review.date}</p>
                                         </div>
-                                    )}
-
-                                                                         <textarea
-                                         className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
-                                         placeholder={isEnglish ? "한국어 답변이 여기에 표시됩니다 (등록 시 영어로 자동 번역)" : "AI가 생성한 답변을 여기에 표시합니다."}
-                                         value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
-                                         readOnly={false}
-                                                                                   onChange={(e) => {
-                                              const newValue = e.target.value;
-                                              
-                                              if (editModeFor[review.id]) {
-                                                  // 수정 모드에서는 원본 한국어 텍스트를 저장
-                                                  setEditTextFor(prev => ({ ...prev, [review.id]: newValue }));
-                                              } else {
-                                                  // 일반 모드에서는 원본 텍스트를 저장 (번역하지 않음)
-                                                  setReviewsData(prev => prev.map(r => 
-                                                      r.id === review.id 
-                                                          ? { ...r, reply: newValue }
-                                                          : r
-                                                  ));
-                                              }
-                                          }}
-                                     />
-                                    
-                                                                         {selectedVersionFor[review.id] && !editModeFor[review.id] && (
-                                         <div className="mb-3 text-sm text-blue-600">
-                                             {isEnglish ? "선택된 버전 (답변달기 시 영어로 번역됨): " : "선택된 버전: "}
-                                             {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title}
-                                         </div>
-                                     )}
-
-                                    <div className="flex justify-end gap-3">
-                                        {!editModeFor[review.id] && (
-                                            <>
-                                                <button 
-                                                    className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
-                                                    onClick={() => handleGenerateReply(review.id)}
+                                        <div className="flex">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <span
+                                                    key={star}
+                                                    className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
                                                 >
-                                                    생성하기
-                                                </button>
-                                                <button 
-                                                    className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg cursor-pointer"
-                                                    onClick={() => handleSubmitReply(review.id)}
-                                                >
-                                                    답변달기
-                                                </button>
-                                                {review.isReplied && (
-                                                    <>
-                                                        <button 
-                                                            className="px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600"
-                                                            onClick={() => handleEditReply(review.id)}
+                                                    ★
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="text-[#222] mb-4">{review.comment}</p>
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-[#888]">👍</span>
+                                            <span className="text-sm text-[#888]">{review.thumbsUp}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-[#888]">👎</span>
+                                            <span className="text-sm text-[#888]">{review.thumbsDown}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* AI Reply Section for each review */}
+                                    <div className="border-t pt-4">
+                                        {/* AI Reply Options */}
+                                        {(showOptionsFor === review.id || editModeFor[review.id]) && (
+                                            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                                                <h5 className="font-medium text-[#222] mb-3">
+                                                    {isEnglish ? "한국어 답변 버전을 선택해주세요 (자동으로 영어로 번역됩니다):" : "AI 답변 버전을 선택해주세요:"}
+                                                </h5>
+                                                <div className="space-y-2">
+                                                    {replyVersions.map((version) => (
+                                                        <button
+                                                            key={version.id}
+                                                            onClick={() => handleSelectVersion(review.id, version)}
+                                                            className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                                                                selectedVersionFor[review.id] === version.id
+                                                                    ? 'border-blue-500 bg-blue-50'
+                                                                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                                                            }`}
                                                         >
-                                                            수정하기
+                                                            <div className="font-medium text-[#222] mb-1">{version.title}</div>
+                                                            <div className="text-sm text-gray-600 min-h-[3rem] whitespace-pre-wrap">
+                                                                {isPreviewing[`${review.id}-${version.id}`]
+                                                                    ? previewText[`${review.id}-${version.id}`] || ""
+                                                                    : version.content
+                                                                }
+                                                            </div>
                                                         </button>
-                                                        <button 
-                                                            className="px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer hover:bg-red-600"
-                                                            onClick={() => handleDeleteReply(review.id)}
-                                                        >
-                                                            삭제하기
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         )}
+
+                                        <textarea
+                                            className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
+                                            placeholder={isEnglish ? "한국어 답변이 여기에 표시됩니다 (등록 시 영어로 자동 번역)" : "AI가 생성한 답변을 여기에 표시합니다."}
+                                            value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
+                                            readOnly={false}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                
+                                                if (editModeFor[review.id]) {
+                                                    // 수정 모드에서는 원본 한국어 텍스트를 저장
+                                                    setEditTextFor(prev => ({ ...prev, [review.id]: newValue }));
+                                                } else {
+                                                    // 일반 모드에서는 원본 텍스트를 저장 (번역하지 않음)
+                                                    setReviewsData(prev => prev.map(r => 
+                                                        r.id === review.id 
+                                                            ? { ...r, reply: newValue }
+                                                            : r
+                                                    ));
+                                                }
+                                            }}
+                                        />
                                         
-                                        {editModeFor[review.id] && (
-                                            <>
-                                                <button 
-                                                    className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
-                                                    onClick={() => handleCancelEdit(review.id)}
-                                                >
-                                                    취소
-                                                </button>
-                                                <button 
-                                                    className="px-4 py-2 bg-green-500 text-white rounded-lg cursor-pointer hover:bg-green-600"
-                                                    onClick={() => handleSaveEdit(review.id)}
-                                                >
-                                                    저장
-                                                </button>
-                                            </>
+                                        {selectedVersionFor[review.id] && !editModeFor[review.id] && (
+                                            <div className="mb-3 text-sm text-blue-600">
+                                                {isEnglish ? "선택된 버전 (답변달기 시 영어로 번역됨): " : "선택된 버전: "}
+                                                {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title}
+                                            </div>
                                         )}
+
+                                        <div className="flex justify-end gap-3">
+                                            {!editModeFor[review.id] && (
+                                                <>
+                                                    <button 
+                                                        className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
+                                                        onClick={() => handleGenerateReply(review.id)}
+                                                    >
+                                                        생성하기
+                                                    </button>
+                                                    <button 
+                                                        className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg cursor-pointer"
+                                                        onClick={() => handleSubmitReply(review.id)}
+                                                    >
+                                                        답변달기
+                                                    </button>
+                                                    {review.isReplied && (
+                                                        <>
+                                                            <button 
+                                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600"
+                                                                onClick={() => handleEditReply(review.id)}
+                                                            >
+                                                                수정하기
+                                                            </button>
+                                                            <button 
+                                                                className="px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer hover:bg-red-600"
+                                                                onClick={() => handleDeleteReply(review.id)}
+                                                            >
+                                                                삭제하기
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                            
+                                            {editModeFor[review.id] && (
+                                                <>
+                                                    <button 
+                                                        className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
+                                                        onClick={() => handleCancelEdit(review.id)}
+                                                    >
+                                                        취소
+                                                    </button>
+                                                    <button 
+                                                        className="px-4 py-2 bg-green-500 text-white rounded-lg cursor-pointer hover:bg-green-600"
+                                                        onClick={() => handleSaveEdit(review.id)}
+                                                    >
+                                                        저장
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    )}
                 </div>
-            </main>
+                </main>
+            </div>
 
             {/* Confirmation Modal */}
             {showModal && (
@@ -588,6 +774,8 @@ export default function Reviews() {
                     </div>
                 </div>
             )}
-        </div>
+        </Layout>
     );
 }
+
+export default withAuth(ReviewIndex);

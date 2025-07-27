@@ -1,8 +1,11 @@
 import React from "react";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
-export default function Reports() {
+function ReportIndex({ currentUser }) {
     return (
-        <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
+        <Layout>
+            <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
 
 
             {/* Main Content */}
@@ -84,5 +87,8 @@ export default function Reports() {
                 </div>
             </main>
         </div>
+        </Layout>
     );
 }
+
+export default withAuth(ReportIndex);

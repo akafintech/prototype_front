@@ -1,247 +1,199 @@
-import React from 'react';
-import { useState } from 'react';
+import React from "react";
+import { useRouter } from "next/router";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
-const Dashboard = () => {
-  const [activeMenu, setActiveMenu] = useState('Dashboard');
+function DashboardStats() {
+  const router = useRouter();
 
-  const menuItems = [
-    { name: 'Dashboard', icon: '📊' },
-    { name: 'Bookings', icon: '📅' },
-    { name: 'Rooms', icon: '🏠' },
-    { name: 'Documents', icon: '📄' },
-    { name: 'Photos', icon: '📷' },
-    { name: 'Guest', icon: '👥' },
-    { name: 'Message', icon: '💬' },
-    { name: 'Help', icon: '❓' },
-    { name: 'Setting', icon: '⚙️' },
+  const handleReviewClick = () => {
+    router.push('/review');
+  };
+
+  const dashboardStats = [
+    {
+      label: "예약률",
+      value: "75%",
+    },
+    {
+      label: "평점",
+      value: "4.5/5",
+    },
+    {
+      label: "총 수익",
+      value: "3,200,000원",
+    },
   ];
 
   const bookingData = [
-    { guest: 'John Doe', roomType: 'Double Room', checkIn: '01/09/24', checkOut: '02/10/24', status: 'Paid' },
-    { guest: 'Jane Smith', roomType: 'Single Room', checkIn: '03/09/24', checkOut: '05/09/24', status: 'Paid' },
-    { guest: 'Mike Johnson', roomType: 'Suite', checkIn: '07/09/24', checkOut: '10/09/24', status: 'Paid' },
-    { guest: 'Sarah Wilson', roomType: 'Double Room', checkIn: '12/09/24', checkOut: '15/09/24', status: 'Paid' },
-    { guest: 'David Brown', roomType: 'Single Room', checkIn: '18/09/24', checkOut: '20/09/24', status: 'Paid' },
-    { guest: 'Lisa Davis', roomType: 'Suite', checkIn: '25/09/24', checkOut: '28/09/24', status: 'Paid' },
+    {
+      customerName: "김몽몽",
+      roomType: "Deluxe Suite",
+      checkIn: "2025-03-15",
+      checkOut: "2025-03-20",
+      status: "확정",
+    },
+    {
+      customerName: "박올리브",
+      roomType: "Standard Room",
+      checkIn: "2025-03-18",
+      checkOut: "2025-03-22",
+      status: "체크인 완료",
+    },
+    {
+      customerName: "Eonusele",
+      roomType: "Executive Suite",
+      checkIn: "2025-03-20",
+      checkOut: "2025-03-25",
+      status: "확정",
+    },
+    {
+      customerName: "Geneoya",
+      roomType: "Standard Room",
+      checkIn: "2025-03-22",
+      checkOut: "2025-03-26",
+      status: "대기 중",
+    },
+    {
+      customerName: "정하나",
+      roomType: "Deluxe Suite",
+      checkIn: "2025-03-25",
+      checkOut: "2025-03-30",
+      status: "확정",
+    },
   ];
 
-  const scheduleData = [
-    { date: '11', event: 'Review Manual Checkin', time: '10.30 am' },
-    { date: '20', event: 'Meeting with Supervisor', time: '11.00 am' },
-    { date: '16', event: 'Review Sales', time: '12.00 pm' },
-    { date: '59', event: 'Meeting with Manager', time: '13.00 pm' },
+  const reviewData = [
+    {
+      username: "배고픈너구리13",
+      date: "2025-03-10",
+      comment: "방은 깨끗하고 좋은데다가 편리했어요.",
+    },
+    {
+      username: "호호우리사랑",
+      date: "2025-03-05",
+      comment: "사장님 친절하신데 저녁에 좀 시끄러웠어요ㅠㅠ",
+    },
   ];
 
   return (
-    <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
-      {/* Main Content */}
-      <main className="flex-1 px-8 py-10">
-        <h1 className="text-3xl font-bold text-[#222] mb-2">대시보드</h1>
-        <p className="text-[#888] mb-8">호텔 예약 관리 시스템의 전체 현황을 확인할 수 있습니다.</p>
-            
-            {/* Search and Actions */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center flex-1 max-w-2xl">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    placeholder="Search Bookings"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2">🔍</span>
-                </div>
-                <button className="ml-4 bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors">
-                  <span className="text-xl">+</span>
-                </button>
-              </div>
-              
-              {/* User Profile */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">🔔</span>
-                  <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                  <div className="text-right">
-                    <div className="font-medium text-gray-800">Maria Alfan</div>
-                    <div className="text-sm text-gray-600">Admin</div>
-                  </div>
-                  <span className="text-gray-400">▼</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Filter Options */}
-            <div className="flex items-center space-x-4">
-              <select className="px-4 py-2 border border-gray-300 rounded-lg">
-                <option>Sort by</option>
-              </select>
-              <select className="px-4 py-2 border border-gray-300 rounded-lg">
-                <option>Saved search</option>
-              </select>
-              <button className="p-2 border border-gray-300 rounded-lg">
-                <span>🔧</span>
-              </button>
-            </div>
-          </div>
+    <Layout>
+      <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
+        <main className="flex-1 px-8 py-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[#222] mb-2">대시보드</h1>
+          <p className="text-[#888]">호텔 운영에 필요한 주요 지표를 한눈에 확인할 수 있습니다.</p>
+        </div>
 
-          {/* Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-gradient-to-r from-blue-400 to-green-400 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-3xl font-bold">872</div>
-                  <div className="text-sm opacity-90">New Booking</div>
+        {/* 통계 카드 섹션 */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {dashboardStats.map((stat, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-start gap-2 p-6 bg-[#e8edf4] rounded-lg"
+            >
+              <div className="flex flex-col items-start relative self-stretch w-full flex-[0_0_auto]">
+                <div className="mt-[-1.00px] [font-family:'Inter-Regular',Helvetica] font-normal text-[#0c141c] text-sm leading-[21px] relative self-stretch tracking-[0]">
+                  {stat.label}
                 </div>
-                <div className="text-2xl">📖</div>
+              </div>
+              <div className="flex flex-col items-start relative self-stretch w-full flex-[0_0_auto]">
+                <div className="mt-[-1.00px] [font-family:'Inter-Bold',Helvetica] font-bold text-[#0c141c] text-2xl leading-8 relative self-stretch tracking-[0]">
+                  {stat.value}
+                </div>
               </div>
             </div>
-            
-            <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-3xl font-bold">285</div>
-                  <div className="text-sm opacity-90">Schedule Room</div>
-                </div>
-                <div className="text-2xl">📅</div>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-3xl font-bold">53</div>
-                  <div className="text-sm opacity-90">Check In</div>
-                </div>
-                <div className="text-2xl">➡️</div>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-red-400 to-red-500 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-3xl font-bold">78</div>
-                  <div className="text-sm opacity-90">Check Out</div>
-                </div>
-                <div className="text-2xl">⬅️</div>
-              </div>
-            </div>
-          </div>
+          ))}
+        </section>
 
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Total Sales Chart */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Total Sales</h3>
-              </div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-2xl font-bold text-gray-800">230.816</div>
-                <div className="text-green-500 font-medium">+2.5% ↑</div>
-              </div>
-              <div className="h-32 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-end justify-center">
-                <div className="w-full h-20 bg-blue-300 rounded-lg opacity-30"></div>
-              </div>
-            </div>
-            
-            {/* New Customers Chart */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">New Customers</h3>
-              </div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-2xl font-bold text-gray-800">2.542</div>
-                <div className="text-green-500 font-medium">+1.3% ↑</div>
-              </div>
-              <div className="h-32 flex items-end justify-center space-x-2">
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '60%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '80%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '40%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '90%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '70%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '50%'}}></div>
-                <div className="w-4 bg-blue-500 rounded-t" style={{height: '85%'}}></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Lists and Schedule Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Booking List */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Booking list</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 text-gray-600">Guest</th>
-                      <th className="text-left py-2 text-gray-600">Type of Room</th>
-                      <th className="text-left py-2 text-gray-600">Check in</th>
-                      <th className="text-left py-2 text-gray-600">Check out</th>
-                      <th className="text-left py-2 text-gray-600">Status</th>
+        {/* 예약 현황 섹션 */}
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-[#222] mb-4">
+            최근 예약 현황
+          </h2>
+          
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="px-4 py-3 font-medium text-[#222] text-sm text-left">고객 이름</th>
+                    <th className="px-4 py-3 font-medium text-[#222] text-sm text-left">객실 타입</th>
+                    <th className="px-4 py-3 font-medium text-[#222] text-sm text-left">체크인 날짜</th>
+                    <th className="px-4 py-3 font-medium text-[#222] text-sm text-left">체크아웃 날짜</th>
+                    <th className="px-4 py-3 font-medium text-[#222] text-sm text-left">상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookingData.map((booking, index) => (
+                    <tr key={index} className="border-t border-[#e5e8ea]">
+                      <td className="px-4 py-2 text-left font-normal text-[#0c141c] text-sm">
+                        {booking.customerName}
+                      </td>
+                      <td className="px-4 py-2 text-left font-normal text-[#49729b] text-sm">
+                        {booking.roomType}
+                      </td>
+                      <td className="px-4 py-2 text-left font-normal text-[#49729b] text-sm">
+                        {booking.checkIn}
+                      </td>
+                      <td className="px-4 py-2 text-left font-normal text-[#49729b] text-sm">
+                        {booking.checkOut}
+                      </td>
+                      <td className="px-4 py-2 text-center align-middle">
+                        <span className="inline-block w-full bg-[#e8edf2] rounded-lg px-4 py-1 font-medium text-[#0c141c] text-sm whitespace-nowrap truncate text-center">
+                          {booking.status}
+                        </span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {bookingData.map((booking, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-3 text-gray-800">{booking.guest}</td>
-                        <td className="py-3 text-gray-600">{booking.roomType}</td>
-                        <td className="py-3 text-gray-600">{booking.checkIn}</td>
-                        <td className="py-3 text-gray-600">{booking.checkOut}</td>
-                        <td className="py-3">
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                            {booking.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            {/* Upcoming Schedule */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Upcoming schedule</h3>
-              
-              {/* Calendar */}
-              <div className="mb-6">
-                <div className="grid grid-cols-7 gap-1 text-center text-sm">
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
-                    <div key={day} className="py-2 text-gray-600 font-medium">{day}</div>
                   ))}
-                  {Array.from({length: 31}, (_, i) => i + 1).map((date) => (
-                    <div
-                      key={date}
-                      className={`py-2 text-sm cursor-pointer rounded ${
-                        date === 11 || date === 20
-                          ? 'bg-blue-500 text-white'
-                          : 'text-gray-800 hover:bg-gray-100'
-                      }`}
-                    >
-                      {date}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Event List */}
-              <div className="space-y-3">
-                {scheduleData.map((event, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                      {event.date}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-800">{event.event}</div>
-                      <div className="text-xs text-gray-600">{event.time}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                </tbody>
+              </table>
             </div>
           </div>
-        </main>
-      </div>
-    );
-  };
+        </section>
 
-  export default Dashboard;
+        {/* 고객 리뷰 섹션 */}
+        <section className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-[#222]">
+              고객 리뷰
+            </h2>
+            <button
+              onClick={handleReviewClick}
+              className="text-[#49729b] hover:text-[#222] text-sm font-medium transition-colors"
+            >
+              전체보기 →
+            </button>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="space-y-6">
+              {reviewData.map((review, index) => (
+                <article 
+                  key={index} 
+                  className="border-b border-gray-100 last:border-b-0 pb-6 last:pb-0 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+                  onClick={handleReviewClick}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="font-medium text-[#222] text-base">
+                      {review.username}
+                    </div>
+                    <time className="text-[#49729b] text-sm">
+                      {review.date}
+                    </time>
+                  </div>
+                  <p className="text-[#222] text-base leading-6">
+                    {review.comment}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    </Layout>
+  );
+}
+
+export default withAuth(DashboardStats);

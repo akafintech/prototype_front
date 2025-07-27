@@ -1,4 +1,6 @@
 import React from "react";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
 const columns = [
   "고객 이름",
@@ -42,9 +44,10 @@ function renderRow(row, idx) {
   );
 }
 
-export default function DepthFrameWrapper() {
+function DepthFrameWrapper({ currentUser }) {
   return (
-    <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
+    <Layout>
+      <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
       {/* Main Content */}
       <main className="flex-1 px-8 py-10">
         <h1 className="text-3xl font-bold text-[#222] mb-2">예약관리</h1>
@@ -92,5 +95,8 @@ export default function DepthFrameWrapper() {
         </div>
       </main>
     </div>
+    </Layout>
   );
 }
+
+export default withAuth(DepthFrameWrapper);

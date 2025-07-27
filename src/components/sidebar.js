@@ -22,7 +22,6 @@ export default function LeftNavigationBar() {
                  </div>
 
                 <div className="flex flex-col h-[367px] items-start gap-2 relative self-stretch w-full">
-                  <Menu text="회원가입" url={"/apply"} />
                   <Menu text="대시보드" url={"/"} />
                   <Menu text="예약관리" url={"/reservation"} />
                   <Menu text="객실관리" url={"/room"} />

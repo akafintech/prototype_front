@@ -1,4 +1,6 @@
 import React from "react";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
 const rooms = [
     { number: "101", type: "Standard", status: "사용 가능", cleaning: "청소 완료", memo: "배개 2개 있음" },
@@ -13,11 +15,12 @@ const rooms = [
     { number: "205", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "조명 교체" },
 ];
 
-export default function ReserveIndex() {
+function ReserveIndex({ currentUser }) {
     return (
-        <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
+        <Layout>
+            <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
 
-            <div className="w-full min-h-screen bg-[#F6F8FB] flex">
+                <div className="w-full min-h-screen bg-[#F6F8FB] flex">
 
 
                 {/* Main Content */}
@@ -98,5 +101,8 @@ export default function ReserveIndex() {
                 </main>
             </div>
         </div>
+        </Layout>
     );
 }
+
+export default withAuth(ReserveIndex);

@@ -1,10 +1,16 @@
 import React from "react";
+import Layout from "@/components/Layout";
+import withAuth from "@/components/withAuth";
 
-export default function Reply() {
+function ReplyIndex({ currentUser }) {
   return (
-    <div className="min-h-screen bg-[#F6F8FB] flex">
+    <Layout>
+      <div className="min-h-screen bg-[#F6F8FB] flex">
       {/* Main Content */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-8 py-10">
+        <h1 className="text-3xl font-bold text-[#222] mb-2">답변 관리</h1>
+        <p className="text-[#888] mb-8">고객 리뷰에 대한 답변을 관리하고 AI를 활용하여 효율적으로 응답할 수 있습니다.</p>
+        
         {/* Platform Buttons */}
         <div className="flex gap-2 mb-4">
           <button className="px-4 py-2 bg-black text-white rounded-lg flex items-center gap-2">
@@ -162,5 +168,8 @@ export default function Reply() {
         </div>
       </main>
     </div>
+    </Layout>
   );
 }
+
+export default withAuth(ReplyIndex);
