@@ -1,10 +1,9 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 import { FaStar } from "react-icons/fa";
 
-function DashboardStats() {
+export default function Dashboard() {
   const router = useRouter();
 
   const handleReviewClick = () => {
@@ -133,5 +132,3 @@ function DashboardStats() {
     </Layout>
   );
 }
-
-export default withAuth(DashboardStats);

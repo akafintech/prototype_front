@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
 function ReportIndex({ currentUser }) {
   const [selectedReport, setSelectedReport] = useState("매출분석");
@@ -243,4 +242,4 @@ function ReportIndex({ currentUser }) {
   );
 }
 
-export default withAuth(ReportIndex);
+export default ReportIndex;

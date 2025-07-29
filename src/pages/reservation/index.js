@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
 const columns = ["고객 이름", "객실 번호", "체크인 날짜", "체크아웃 날짜", "상태", "총 금액"];
 
@@ -132,4 +131,4 @@ function DepthFrameWrapper({ currentUser }) {
   );
 }
 
-export default withAuth(DepthFrameWrapper);
+export default DepthFrameWrapper;

@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
 const reviews = [
     {
@@ -753,4 +752,4 @@ function ReviewIndex({ currentUser }) {
     );
 }
 
-export default withAuth(ReviewIndex);
+export default ReviewIndex;

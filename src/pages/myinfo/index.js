@@ -1,11 +1,21 @@
-import React from "react";
+import React,{useState} from "react";
 import tw from "tailwind-styled-components";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Input = tw.input`flex-1 ml-4 px-4 py-2 border border-[#E5E7EB] rounded-lg bg-gray-50 text-slate-500`;
 
-function MyInfoIndex({ currentUser }) {
+function MyInfoIndex() {
+  const { currentUser } = useAuth();
+  const [registerData, setRegisterData] = useState({
+    email: currentUser?.email || "",
+    username: currentUser?.username || "",
+    phone: currentUser?.phone_number || "",
+    password: "",
+    confirmPassword: ""
+  });
+
+
   return (
     <Layout>
       <div className="min-h-screen bg-[#F6F8FB] flex">
@@ -17,13 +27,21 @@ function MyInfoIndex({ currentUser }) {
             {/* ID Field */}
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium w-32">아이디</label>
-              <Input type="email" placeholder="example@example.com" />
+              <Input
+                type="email"
+                placeholder="example@example.com"
+                value={currentUser?.email || ""}
+              />
             </div>
 
             {/* Name Field */}
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-[#222] w-32">이름</label>
-              <Input type="text" placeholder="김몽" />
+              <Input
+                type="text"
+                placeholder="김몽"
+                value={currentUser?.username || ""}
+              />
             </div>
 
             {/* Current Password Field */}
@@ -38,47 +56,20 @@ function MyInfoIndex({ currentUser }) {
               <div className="flex flex-1 ml-4 gap-3">
                 <input
                   type="password"
-                  placeholder="비밀번호를 재입력해주세요"
+                  placeholder="새 비밀번호를 입력해주세요"
                   className="flex-1 px-4 py-2 border border-[#E5E7EB] rounded-lg bg-gray-50 text-slate-500"
                 />
-                <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg hover:bg-[#d1d8e0] whitespace-nowrap">
-                  변경하기
-                </button>
               </div>
             </div>
 
             {/* Phone Number Field */}
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-[#222] w-32">휴대폰 번호</label>
-              <Input type="text" placeholder="숫자만 입력해 주세요" />
-            </div>
-
-            {/* Resident Registration Number Field */}
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-[#222] w-32">주민번호</label>
-              <div className="flex flex-1 ml-4 gap-2 items-center">
-                {/* 앞 6자리 */}
-                <input
-                  type="text"
-                  maxLength={6}
-                  inputMode="numeric"
-                  pattern="\d*"
-                  placeholder="YYMMDD"
-                  className="w-24 px-3 py-2 border border-[#E5E7EB] rounded-lg bg-gray-50 text-slate-500"
-                />
-                <span className="text-[#222]">-</span>
-                {/* 성별 구분 1자리 */}
-                <input
-                  type="text"
-                  maxLength={1}
-                  inputMode="numeric"
-                  pattern="[1-4]"
-                  placeholder="1"
-                  className="w-8 px-2 py-2 border border-[#E5E7EB] rounded-lg bg-gray-50 text-slate-500"
-                />
-                {/* 뒷자리 마스킹 */}
-                <span className="text-[#222]">●●●●●●</span>
-              </div>
+              <Input
+                type="text"
+                placeholder="숫자만 입력해 주세요"
+                value={currentUser?.phone_number || ""}
+              />
             </div>
           </div>
 
@@ -117,4 +108,4 @@ function MyInfoIndex({ currentUser }) {
   );
 }
 
-export default withAuth(MyInfoIndex);
+export default MyInfoIndex;

@@ -9,7 +9,7 @@ export async function fetchLogin(email, password) {
   return response.json().then(data => ({ ok: response.ok, data }));
 }
 
-export async function fetchRegister({ email, password, username, phone, referralCode }) {
+export async function fetchRegister({ email, password, username, phoneNumber, referralCode }) {
   const response = await fetch(`${API_BASE_URL}/user/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -17,7 +17,7 @@ export async function fetchRegister({ email, password, username, phone, referral
       email,
       password,
       username,
-      phone,
+      phone_number: phoneNumber,
       referral_code: referralCode,
     }),
   });

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
 const rooms = [
   { number: "101", type: "Standard", status: "사용 가능", cleaning: "청소 완료", memo: "배개 2개 있음" },
@@ -166,4 +165,4 @@ function ReserveIndex({ currentUser }) {
   );
 }
 
-export default withAuth(ReserveIndex);
+export default ReserveIndex;
