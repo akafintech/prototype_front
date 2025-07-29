@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { fetchMe, fetchLogin, fetchRegister } from "@/api/user"; 
 
 export default function Header() {
   const router = useRouter();
@@ -26,15 +27,9 @@ export default function Header() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await fetch('http://localhost:8000/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setCurrentUser(userData);
+        const { ok, data } = await fetchMe(token);
+        if (ok) {
+          setCurrentUser(data);
         } else {
           localStorage.removeItem('token');
           setCurrentUser(null);
@@ -82,20 +77,8 @@ export default function Header() {
     try {
       if (isLoginMode) {
         // 로그인 로직
-        const response = await fetch('http://localhost:8000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
+        const { ok, data } = await fetchLogin(formData.email, formData.password);
+        if (ok) {
           localStorage.setItem('token', data.access_token);
           setCurrentUser(data.user);
           setShowAuthModal(false);
@@ -119,23 +102,8 @@ export default function Header() {
           return;
         }
 
-        const response = await fetch('http://localhost:8000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-            username: formData.username,
-            phone: formData.phone,
-            referral_code: formData.referralCode
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
+        const { ok, data } = await fetchRegister(formData);
+        if (ok) {
           setMessage("회원가입이 완료되었습니다! 로그인해주세요.");
           setIsLoginMode(true);
           setFormData({
@@ -227,163 +195,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-8 w-full max-w-md mx-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-[#222]">
-                {isLoginMode ? "로그인" : "회원가입"}
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Toggle Buttons */}
-            <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setIsLoginMode(true)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  isLoginMode
-                    ? "bg-white text-[#222] shadow-sm"
-                    : "text-gray-600 hover:text-[#222]"
-                }`}
-              >
-                로그인
-              </button>
-              <button
-                onClick={() => setIsLoginMode(false)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  !isLoginMode
-                    ? "bg-white text-[#222] shadow-sm"
-                    : "text-gray-600 hover:text-[#222]"
-                }`}
-              >
-                회원가입
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1">
-                  이메일
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                  placeholder="이메일을 입력하세요"
-                />
-              </div>
-
-              {!isLoginMode && (
-                <div>
-                  <label className="block text-sm font-medium text-[#222] mb-1">
-                    사용자명
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                    placeholder="사용자명을 입력하세요"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1">
-                  비밀번호
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                  placeholder="비밀번호를 입력하세요"
-                />
-              </div>
-
-              {!isLoginMode && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-[#222] mb-1">
-                      비밀번호 확인
-                    </label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                      placeholder="비밀번호를 다시 입력하세요"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#222] mb-1">
-                      휴대폰 번호
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                      placeholder="휴대폰 번호를 입력하세요"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#222] mb-1">
-                      추천인 코드 (선택)
-                    </label>
-                    <input
-                      type="text"
-                      name="referralCode"
-                      value={formData.referralCode}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e8edf2] focus:border-transparent"
-                      placeholder="추천인 코드를 입력하세요"
-                    />
-                  </div>
-                </>
-              )}
-
-              {message && (
-                <div className={`p-3 rounded-lg text-sm ${
-                  message.includes("완료") || message.includes("성공")
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}>
-                  {message}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-[#e8edf2] text-black py-3 rounded-lg font-medium hover:bg-[#d1d8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? "처리 중..." : (isLoginMode ? "로그인" : "회원가입")}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
-} 
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
+import { fetchLogin, fetchRegister, fetchMe } from "@/api/user";
 
 export default function Home() {
   const router = useRouter();
@@ -26,17 +27,10 @@ export default function Home() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await fetch('http://localhost:8000/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setCurrentUser(userData);
+        const { ok, data } = await fetchMe(token);
+        if (ok) {
+          setCurrentUser(data);
           setIsLoggedIn(true);
-          // 이미 로그인된 상태라면 대시보드로 자동 이동
           router.push('/dashboard');
         } else {
           localStorage.removeItem('token');
@@ -70,30 +64,15 @@ export default function Home() {
 
     try {
       if (isLoginMode) {
-        // 로그인 로직
-        const response = await fetch('http://localhost:8000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
+        const { ok, data } = await fetchLogin(formData.email, formData.password);
+        if (ok) {
+          console.log('로그인 성공:', data);
           localStorage.setItem('token', data.access_token);
           setCurrentUser(data.user);
           setIsLoggedIn(true);
-          
-          // 페이지 새로고침 후 대시보드로 이동하여 사이드바가 즉시 노출되도록 함
           setTimeout(() => {
             window.location.href = '/dashboard';
           }, 500);
-          
           setFormData({
             email: "",
             password: "",
@@ -106,30 +85,13 @@ export default function Home() {
           setMessage(data.detail || "로그인에 실패했습니다.");
         }
       } else {
-        // 회원가입 로직
         if (formData.password !== formData.confirmPassword) {
           setMessage("비밀번호가 일치하지 않습니다.");
           setIsSubmitting(false);
           return;
         }
-
-        const response = await fetch('http://localhost:8000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-            username: formData.username,
-            phone: formData.phone,
-            referral_code: formData.referralCode
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
+        const { ok, data } = await fetchRegister(formData);
+        if (ok) {
           setMessage("회원가입이 완료되었습니다! 로그인해주세요.");
           setIsLoginMode(true);
           setFormData({
@@ -150,20 +112,6 @@ export default function Home() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    setFormData({
-      email: "",
-      password: "",
-      confirmPassword: "",
-      username: "",
-      phone: "",
-      referralCode: ""
-    });
   };
 
   return (

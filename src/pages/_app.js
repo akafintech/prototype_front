@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import LeftNavigationBar from "@/components/sidebar";
 import "@/styles/globals.css";
+import { fetchMe } from "@/api/user"; // 추가
 
 export default function App({ Component, pageProps }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,13 +29,8 @@ export default function App({ Component, pageProps }) {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await fetch('http://localhost:8000/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
+        const { ok } = await fetchMe(token); // fetchMe 함수 사용
+        if (ok) {
           setIsAuthenticated(true);
         } else {
           localStorage.removeItem('token');

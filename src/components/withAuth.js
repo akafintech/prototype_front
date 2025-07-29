@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { fetchMe } from '@/api/user'; 
 
 export default function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {
@@ -16,14 +17,10 @@ export default function withAuth(WrappedComponent) {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await fetch('http://localhost:8000/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          const response = await fetchMe(token);
           
           if (response.ok) {
-            const userData = await response.json();
+            const userData = response.data;
             setCurrentUser(userData);
             setIsAuthenticated(true);
           } else {
