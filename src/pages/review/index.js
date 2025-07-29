@@ -8,61 +8,49 @@ const reviews = [
     {
         id: 1,
         name: "dk**",
-        date: "2024-06-15",
+        date: "2025-06-15",
         rating: 5,
         comment: "Exceptional service and a truly memorable stay. The staff went above and beyond to ensure our comfort. Highly recommend!",
-        thumbsUp: 12,
-        thumbsDown: 2,
         reply: ""
     },
     {
         id: 2,
         name: "li**",
-        date: "2024-05-20",
+        date: "2025-05-20",
         rating: 4,
         comment: "가성비 좋아요. 다음에도 오고싶어요.",
-        thumbsUp: 8,
-        thumbsDown: 1,
         reply: ""
     },
     {
         id: 3,
         name: "yw**",
-        date: "2024-04-10",
+        date: "2025-05-10",
         rating: 3,
         comment: "The stay was decent, but there were a few issues with the room service. The staff was friendly, but the response time could be improved.",
-        thumbsUp: 5,
-        thumbsDown: 3,
         reply: ""
     },
     {
         id: 4,
         name: "park**",
-        date: "2024-06-20",
+        date: "2025-04-20",
         rating: 5,
         comment: "정말 만족스러운 숙박이었습니다. 깨끗하고 편안했어요.",
-        thumbsUp: 15,
-        thumbsDown: 0,
         reply: ""
     },
     {
         id: 5,
         name: "kim**",
-        date: "2024-05-15",
+        date: "2025-04-15",
         rating: 2,
         comment: "기대했던 것보다는 별로였습니다. 개선이 필요해요.",
-        thumbsUp: 2,
-        thumbsDown: 8,
         reply: ""
     },
     {
         id: 6,
         name: "lee**",
-        date: "2024-04-25",
+        date: "2025-03-25",
         rating: 1,
         comment: "최악입니다. 다시는 오지 않겠습니다.",
-        thumbsUp: 0,
-        thumbsDown: 12,
         reply: ""
     }
 ];
@@ -467,25 +455,14 @@ function ReviewIndex({ currentUser }) {
                 <div className="bg-white rounded-xl shadow p-6 mb-6">
                     {/* Source Tabs */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                        <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg">리뷰 전체</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">Booking.com</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">TripAdvisor</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">Direct</button>
+                        <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg">전체</button>
+                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔1</button>
+                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔2</button>
+                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔3</button>
                     </div>
 
                     {/* Search and Filters */}
                     <div className="flex flex-wrap items-center gap-4">
-                        <div className="flex-1 relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#888]">🔍</span>
-                            <input
-                                type="text"
-                                placeholder="Search reviews by guest name or keywords"
-                                className="w-full pl-10 pr-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
-                                value={searchKeyword}
-                                onChange={handleSearchChange}
-                            />
-                        </div>
-                        
                         {/* 별점 드롭다운 */}
                         <div className="relative">
                             <button 
@@ -595,11 +572,9 @@ function ReviewIndex({ currentUser }) {
                                     <p className="text-[#222] mb-4">{review.comment}</p>
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="flex items-center gap-1">
-                                            <span className="text-[#888]">👍</span>
                                             <span className="text-sm text-[#888]">{review.thumbsUp}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <span className="text-[#888]">👎</span>
                                             <span className="text-sm text-[#888]">{review.thumbsDown}</span>
                                         </div>
                                     </div>
