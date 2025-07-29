@@ -18,11 +18,11 @@ function DashboardStats() {
   ];
 
   const bookingData = [
-    { customerName: "김몽몽", roomType: "Deluxe Suite", checkIn: "2025-03-15", checkOut: "2025-03-20", status: "확정" },
-    { customerName: "박올리브", roomType: "Standard Room", checkIn: "2025-03-18", checkOut: "2025-03-22", status: "체크인 완료" },
-    { customerName: "Eonusele", roomType: "Executive Suite", checkIn: "2025-03-20", checkOut: "2025-03-25", status: "확정" },
-    { customerName: "Geneoya", roomType: "Standard Room", checkIn: "2025-03-22", checkOut: "2025-03-26", status: "대기 중" },
-    { customerName: "정하나", roomType: "Deluxe Suite", checkIn: "2025-03-25", checkOut: "2025-03-30", status: "확정" },
+    { customerName: "김몽몽", roomType: "Deluxe Suite", checkIn: "2025-03-25", checkOut: "2025-03-27", status: "확정" },
+    { customerName: "박올리브", roomType: "Standard Room", checkIn: "2025-03-22", checkOut: "2025-03-25", status: "체크인 완료" },
+    { customerName: "Eonusele", roomType: "Executive Suite", checkIn: "2025-03-23", checkOut: "2025-03-25", status: "확정" },
+    { customerName: "Geneoya", roomType: "Standard Room", checkIn: "2025-03-18", checkOut: "2025-03-20", status: "대기 중" },
+    { customerName: "정하나", roomType: "Deluxe Suite", checkIn: "2025-03-17", checkOut: "2025-03-21", status: "확정" },
   ];
 
   const reviewData = [

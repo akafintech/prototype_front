@@ -7,20 +7,49 @@ const rooms = [
   { number: "102", type: "Deluxe", status: "사용 중", cleaning: "청소 완료", memo: "침구류 상태 최상" },
   { number: "103", type: "Suite", status: "서비스 중지", cleaning: "청소 전", memo: "공사로 사용 불가" },
   { number: "104", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "새벽 1시 예약" },
-  { number: "105", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "비품 준비" },
-  { number: "201", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "샤워 고장" },
-  { number: "202", type: "Standard", status: "사용 중", cleaning: "청소 전", memo: "바닥 청소 필요" },
+  { number: "105", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "비품 준비 완료" },
+  { number: "201", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "샤워기 교체 완료" },
+  { number: "202", type: "Standard", status: "사용 가능", cleaning: "청소 전", memo: "바닥 청소 필요" },
   { number: "203", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "에어컨·냉장고 작동 양호" },
-  { number: "204", type: "Suite", status: "사용 가능", cleaning: "청소 완료", memo: "커튼 열림 상태" },
-  { number: "205", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "조명 교체" },
+  { number: "204", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "타월 보충 필요" },
+  { number: "205", type: "Standard", status: "서비스 중지", cleaning: "청소 완료", memo: "샤워기 고장" },
 ];
+
+function Dropdown({ value, onChange, options }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        onClick={() => setOpen(!open)}
+        className="ml-2 px-2 py-1 text-sm border border-gray-300 rounded bg-white"
+      >
+        {value} ▼
+      </button>
+      {open && (
+        <ul className="absolute mt-1 z-10 w-max bg-white border border-gray-300 rounded shadow text-sm">
+          {options.map((opt) => (
+            <li
+              key={opt}
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+              className="px-3 py-1 hover:bg-gray-100 cursor-pointer whitespace-nowrap"
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 function ReserveIndex({ currentUser }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const handleSearch = () => {
-    setSearchTerm(searchInput);
-  };
+  const handleSearch = () => setSearchTerm(searchInput);
 
   const [filterType, setFilterType] = useState("전체");
   const [filterStatus, setFilterStatus] = useState("전체");
@@ -33,7 +62,6 @@ function ReserveIndex({ currentUser }) {
     const matchSearch =
       searchTerm === "" ||
       Object.values(room).some((value) => value.includes(searchTerm));
-
     return matchType && matchStatus && matchCleaning && matchSearch;
   });
 
@@ -52,10 +80,12 @@ function ReserveIndex({ currentUser }) {
               placeholder="검색하기"
               className="flex-grow px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch();
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchInput(value);
+                if (value.trim() === "") setSearchTerm("");
               }}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
             <button
               className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg font-medium whitespace-nowrap"
@@ -74,65 +104,27 @@ function ReserveIndex({ currentUser }) {
                 <th className="py-2">객실 번호</th>
                 <th className="py-2">
                   객실 유형
-                  <select
+                  <Dropdown
                     value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="ml-2 text-sm bg-transparent appearance-none pr-6"
-                    style={{
-                      backgroundImage: "url('/icons/arrow-down.svg')",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0.25rem center",
-                      backgroundSize: "1rem",
-                      border: "none",
-                      paddingRight: "1.5rem",
-                    }}
-                  >
-                    <option>전체</option>
-                    <option>Standard</option>
-                    <option>Deluxe</option>
-                    <option>Suite</option>
-                  </select>
+                    onChange={setFilterType}
+                    options={["전체", "Standard", "Deluxe", "Suite"]}
+                  />
                 </th>
                 <th className="py-2">
                   상태
-                  <select
+                  <Dropdown
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="ml-2 text-sm bg-transparent appearance-none pr-6"
-                    style={{
-                      backgroundImage: "url('/icons/arrow-down.svg')",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0.25rem center",
-                      backgroundSize: "1rem",
-                      border: "none",
-                      paddingRight: "1.5rem",
-                    }}
-                  >
-                    <option>전체</option>
-                    <option>사용 가능</option>
-                    <option>사용 중</option>
-                    <option>서비스 중지</option>
-                  </select>
+                    onChange={setFilterStatus}
+                    options={["전체", "사용 가능", "사용 중", "서비스 중지"]}
+                  />
                 </th>
                 <th className="py-2">
                   청소 여부
-                  <select
+                  <Dropdown
                     value={filterCleaning}
-                    onChange={(e) => setFilterCleaning(e.target.value)}
-                    className="ml-2 text-sm bg-transparent appearance-none pr-6"
-                    style={{
-                      backgroundImage: "url('/icons/arrow-down.svg')",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0.25rem center",
-                      backgroundSize: "1rem",
-                      border: "none",
-                      paddingRight: "1.5rem",
-                    }}
-                  >
-                    <option>전체</option>
-                    <option>청소 완료</option>
-                    <option>청소 전</option>
-                  </select>
+                    onChange={setFilterCleaning}
+                    options={["전체", "청소 완료", "청소 전"]}
+                  />
                 </th>
                 <th className="py-2">객실 상태 메모</th>
               </tr>

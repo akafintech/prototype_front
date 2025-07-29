@@ -8,7 +8,51 @@ function ReportIndex({ currentUser }) {
   const [endDate, setEndDate] = useState("");
   const [showReport, setShowReport] = useState(false);
 
-  const reportTypes = ["예약률", "매출분석", "후기 관리", "객실 이용 패턴"];
+  const today = new Date().toISOString().split("T")[0];
+  const reportTypes = ["예약률", "매출분석", "리뷰분석", "고객분석"];
+
+  const getDateRangeLabels = () => {
+    if (!startDate || !endDate) return [];
+    const s = new Date(startDate);
+    const e = new Date(endDate);
+    const labels = [];
+    let current = new Date(s);
+    while (current <= e) {
+      labels.push(current.toISOString().slice(5, 10));
+      current.setDate(current.getDate() + 7);
+    }
+    return labels;
+  };
+
+  const generateLineChartData = () => {
+    return getDateRangeLabels().map((label) => ({
+      label,
+      value: 60 + Math.floor(Math.random() * 30),
+    }));
+  };
+
+  const generateKeywordsWithCounts = () => {
+    if (!startDate || !endDate) return [];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffDays = Math.max(1, Math.floor((end - start) / (1000 * 60 * 60 * 24)));
+
+    const baseKeywords = [
+      "깨끗해요", "직원 친절", "위치 최고", "가성비",
+      "다시 오고 싶어요", "조용함", "수압 세네요", "아늑해요"
+    ];
+
+    const keywords = baseKeywords.map((word, idx) => {
+      const base = 5 + idx * 2;
+      const variation = Math.floor(Math.random() * (diffDays + 1));
+      return {
+        word,
+        count: base + variation
+      };
+    });
+
+    return keywords.sort((a, b) => b.count - a.count);
+  };
 
   const handleGenerateReport = () => {
     if (startDate && endDate) {
@@ -16,25 +60,131 @@ function ReportIndex({ currentUser }) {
     }
   };
 
+  const renderLineChart = (data) => (
+    <div className="w-full h-64 bg-[#f5f8fa] rounded-lg px-6 py-4 overflow-x-auto">
+      <svg viewBox={`0 0 ${data.length * 50} 200`} className="w-full h-full">
+        <polyline
+          fill="none"
+          stroke="#3B82F6"
+          strokeWidth="3"
+          points={data.map((d, i) => `${i * 50},${200 - d.value * 1.5}`).join(" ")}
+        />
+        {data.map((d, i) => (
+          <text key={i} x={i * 50} y={195} fontSize="10" fill="#999" textAnchor="middle">
+            {d.label}
+          </text>
+        ))}
+      </svg>
+    </div>
+  );
+
+  const renderChart = () => {
+    if (!startDate || !endDate) return null;
+
+    switch (selectedReport) {
+      case "예약률": {
+        const data = generateLineChartData();
+        return (
+          <>
+            <div className="text-3xl font-bold mb-1">75%</div>
+            <div className="text-sm text-[#888] mb-4">
+              최근 12개월 <span className="text-[#03C75A]">+5%</span>
+            </div>
+            {renderLineChart(data)}
+          </>
+        );
+      }
+      case "매출분석": {
+        const data = generateLineChartData();
+        return (
+          <>
+            <div className="text-sm text-[#888] mb-4">최근 월별 매출 변화입니다.</div>
+            {renderLineChart(data)}
+          </>
+        );
+      }
+      case "리뷰분석": {
+        const keywords = generateKeywordsWithCounts();
+        const top5 = keywords.slice(0, 5);
+        const extra = keywords.slice(5);
+
+        return (
+          <div className="w-full bg-[#F0F4F8] rounded-lg p-6 text-sm text-[#333]">
+            <h3 className="font-semibold mb-4">주요 키워드 언급량</h3>
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <ul className="space-y-2">
+                  {top5.map((kw, i) => (
+                    <li
+                      key={i}
+                      className="flex justify-between items-center bg-white rounded-full py-2 px-4 border border-[#D1D5DB]"
+                    >
+                      <span>{kw.word}</span>
+                      <span className="text-[#888]">{kw.count}회</span>
+                    </li>
+                  ))}
+                </ul>
+                {extra.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {extra.map((kw, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 text-xs text-[#444] bg-white border border-[#D1D5DB] rounded-full"
+                      >
+                        {kw.word}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* 워드클라우드 이미지 */}
+              <div className="w-full lg:w-1/2 flex items-center justify-center">
+                <img
+                  src="/818527b8-b952-4e3d-87a3-8a9da2195a5a.png"
+                  alt="워드클라우드"
+                  className="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      }
+      case "고객분석": {
+        return (
+          <div className="w-full bg-[#fff7ed] rounded-lg p-6">
+            <h3 className="font-semibold text-[#b45309] mb-3">고객 이용 분석 요약</h3>
+            <ul className="text-sm text-[#92400e] list-disc list-inside">
+              <li>객실 점유율: 87% (평균)</li>
+              <li>1박 이상 숙박 고객 비율: 72%</li>
+              <li>체크인 시간대: 16시~18시에 집중</li>
+              <li>가족 고객 비율: 전체의 35%</li>
+              <li>고객 재방문율: 22%</li>
+              <li>가장 인기 있는 객실 타입: 디럭스룸</li>
+            </ul>
+          </div>
+        );
+      }
+      default:
+        return null;
+    }
+  };
+
   return (
     <Layout>
-      <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
-        <main className="flex-1 px-8 py-10">
+      <div className="px-6 py-5 w-full min-h-screen">
+        <main className="w-full">
           <h1 className="text-3xl font-bold text-[#222] mb-2">통계/분석</h1>
           <p className="text-[#888] mb-8">호텔의 성과를 파악할 수 있는 통계와 분석자료입니다.</p>
 
-          {/* 리포트 유형 선택 */}
           <div className="bg-white rounded-xl shadow p-6 mb-6">
-            <h2 className="text-lg font-bold text-[#222] mb-4">리포트 유형</h2>
+            <h2 className="text-lg font-bold mb-4">리포트 유형</h2>
             <div className="flex flex-wrap gap-2 mb-6">
               {reportTypes.map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedReport(type)}
                   className={`px-4 py-2 rounded-lg border ${
-                    selectedReport === type
-                      ? "bg-[#e8edf2] text-black"
-                      : "bg-white text-[#888] border-[#E5E7EB]"
+                    selectedReport === type ? "bg-[#e8edf2] text-black" : "bg-white text-[#888] border-[#E5E7EB]"
                   }`}
                 >
                   {type}
@@ -42,7 +192,6 @@ function ReportIndex({ currentUser }) {
               ))}
             </div>
 
-            {/* 날짜 선택 */}
             <div className="mb-6">
               <label className="block text-[#222] font-medium mb-2">{selectedReport}</label>
               <div className="flex gap-4">
@@ -51,7 +200,8 @@ function ReportIndex({ currentUser }) {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
+                    max={today}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   />
                   <p className="text-xs text-[#888] mt-1">시작일</p>
                 </div>
@@ -60,53 +210,31 @@ function ReportIndex({ currentUser }) {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
+                    max={today}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   />
                   <p className="text-xs text-[#888] mt-1">종료일</p>
                 </div>
               </div>
             </div>
 
-            {/* 리포트 생성 버튼 */}
             <button
-              className="w-full bg-[#e8edf2] text-black py-3 rounded-lg font-medium"
               onClick={handleGenerateReport}
+              className="w-full bg-[#e8edf2] text-black py-3 rounded-lg font-medium"
             >
               리포트 생성하기
             </button>
           </div>
 
-          {/* 리포트 결과 (조건 만족 시 표시) */}
           {showReport && (
             <div className="bg-white rounded-xl shadow p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="text-lg font-bold text-[#222] mb-2">
-                    {selectedReport} 통계자료
-                  </h2>
-                  <div className="text-3xl font-bold text-[#222] mb-1">75%</div>
-                  <div className="text-sm text-[#888]">
-                    최근 12개월 <span className="text-[#03C75A]">+5%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 임의 차트 (막대 차트 예시) */}
-              <div className="w-full h-64 bg-[#e8edf2] rounded-lg p-4 flex items-end justify-between">
-                {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"].map((m, i) => (
-                  <div key={m} className="flex flex-col items-center w-8">
-                    <div
-                      className="w-full bg-[#c5d0db] rounded-t"
-                      style={{
-                        height: `${60 + Math.sin(i) * 30}%`,
-                        minHeight: "20px",
-                        transition: "height 0.3s",
-                      }}
-                    ></div>
-                    <span className="text-xs text-[#888] mt-2">{m}</span>
-                  </div>
-                ))}
-              </div>
+              <h2 className="text-lg font-bold mb-2">
+                {selectedReport === "예약률" && "예약률 통계자료"}
+                {selectedReport === "매출분석" && "매출분석 통계자료"}
+                {selectedReport === "리뷰분석" && "리뷰분석 통계자료"}
+                {selectedReport === "고객분석" && "고객분석 통계자료"}
+              </h2>
+              {renderChart()}
             </div>
           )}
         </main>

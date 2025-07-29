@@ -2,14 +2,7 @@ import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import withAuth from "@/components/withAuth";
 
-const columns = [
-  "고객 이름",
-  "객실 번호",
-  "체크인 날짜",
-  "체크아웃 날짜",
-  "상태",
-  "총 금액",
-];
+const columns = ["고객 이름", "객실 번호", "체크인 날짜", "체크아웃 날짜", "상태", "총 금액"];
 
 const data = [
   ["김수연", "101", "2025-07-15", "2025-07-17", "완료", "100,000"],
@@ -78,7 +71,13 @@ function DepthFrameWrapper({ currentUser }) {
                   placeholder="검색하기"
                   className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white text-[#222]"
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchInput(value);
+                    if (value.trim() === "") {
+                      setSearchTerm(""); // 입력값이 비면 초기화
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSearch();
                   }}
