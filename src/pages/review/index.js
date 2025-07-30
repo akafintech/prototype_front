@@ -1,7 +1,13 @@
 // pages/reviews.js
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import tw from "tailwind-styled-components";
+import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
+import { fetchStores } from "@/api/store";
+
+const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
+const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
 
 const reviews = [
     {
@@ -78,6 +84,21 @@ function ReviewIndex({ currentUser }) {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [searchKeyword, setSearchKeyword] = useState("");
+
+    // jinnam
+    const [stores, setStores] = useState([]);
+    const [activeStore, setActiveStore] = useState("전체");
+
+    const loadStores = async () => {
+        const token = localStorage.getItem("token");
+        const data = await fetchStores(token);
+        setStores(data || []);
+    };
+
+    useEffect(() => {
+        loadStores();
+
+    }, []);
 
     // 영어 감지 함수
     const isEnglishReview = (comment) => {
@@ -182,6 +203,9 @@ function ReviewIndex({ currentUser }) {
     // 필터 변경 시 자동 적용
     useEffect(() => {
         applyFilters();
+
+
+
     }, [selectedRating, startDate, endDate, searchKeyword, reviewsData]);
 
     const handleGenerateReply = (reviewId) => {
@@ -452,13 +476,15 @@ function ReviewIndex({ currentUser }) {
 
                 {/* Review Filters and Search */}
                 <div className="bg-white rounded-xl shadow p-6 mb-6">
-                    {/* Source Tabs */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        <button className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg">전체</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔1</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔2</button>
-                        <button className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]">호텔3</button>
-                    </div>
+                {/* Source Tabs */}
+                <StoreTab>
+                    <StoreButton>전체</StoreButton>
+                    {stores.map((store, index) => (
+                        <StoreButton key={store.id || index}>
+                            {store.name}
+                        </StoreButton>
+                    ))}
+                </StoreTab>
 
                     {/* Search and Filters */}
                     <div className="flex flex-wrap items-center gap-4">
