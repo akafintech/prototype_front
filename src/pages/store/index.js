@@ -29,7 +29,6 @@ export default function StoreManagePage() {
     setLoading(true);
     const token = localStorage.getItem("token");
     const data = await fetchStores(token);
-    console.log("Fetched stores:", data);
     
     setStores(data || []);
     setLoading(false);
@@ -52,7 +51,14 @@ export default function StoreManagePage() {
     if (!modalStoreName.trim() || !modalBusinessNumber.trim()) return;
     setLoading(true);
     const token = localStorage.getItem("token");
-    await addStore(token, modalStoreName, modalBusinessNumber);
+    const {ok,data} = await addStore(token, modalStoreName, modalBusinessNumber);
+    console.log("Add store ok:",ok);
+    console.log("Add store data:", data);
+    if (!ok) {
+      alert(data.detail || "매장 등록에 실패하였습니다.");
+      setLoading(false);
+      return;1
+    }
     setShowModal(false);
     setModalStoreName("");
     setModalBusinessNumber("");
@@ -102,6 +108,7 @@ export default function StoreManagePage() {
                     type="text"
                     value={modalBusinessNumber}
                     onChange={e => setModalBusinessNumber(e.target.value)}
+                    maxLength={10}
                     className="w-full border px-3 py-2 rounded"
                     required
                   />

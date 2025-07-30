@@ -18,13 +18,15 @@ export async function addStore(token, name, businessNumber) {
       business_number:businessNumber 
     }),
   });
-  return res.json();
+  console.log("Add store res:",res);
+  return res.json().then(data => ({ ok: res.ok, data }));
 }
 export async function deleteStore(token, id) {
   const res = await fetch(`${API_BASE_URL}/store/delete/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res.json();
+  console.log(`Delete store response: ${res}`);
+  return res.ok;
 }
 
