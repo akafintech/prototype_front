@@ -4,6 +4,7 @@ import LeftNavigationBar from "@/components/sidebar";
 import "@/styles/globals.css";
 import { fetchMe } from "@/api/user";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const privatePaths = [
   "/dashboard",
@@ -19,21 +20,25 @@ const privatePaths = [
 function AuthGuard({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // null: 로딩, false: 비로그인, true: 로그인
   const router = useRouter();
+  const { setCurrentUser } = useAuth();
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const { ok } = await fetchMe(token);
+          const { ok,data } = await fetchMe(token);
           setIsAuthenticated(!!ok);
+          if (ok) setCurrentUser(data);
           if (!ok) localStorage.removeItem('token');
         } catch {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
+          setCurrentUser(null);
         }
       } else {
         setIsAuthenticated(false);
+        setCurrentUser(null);
       }
     };
     checkAuthStatus();

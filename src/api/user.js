@@ -30,3 +30,15 @@ export async function fetchMe(token) {
   });
   return response.json().then(data => ({ ok: response.ok, data }));
 }
+
+export async function fetchUpdateUser(token, userData) {
+  const response = await fetch(`${API_BASE_URL}/user/update`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(userData),
+  });
+  return response.json().then(data => ({ ok: response.ok, data }));
+}
