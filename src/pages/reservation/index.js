@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Layout from "@/components/Layout";
+import tw from "tailwind-styled-components";
+import { fetchStores } from "@/api/store";
+
+const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
+const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
 
 const columns = ["고객 이름", "객실 번호", "체크인 날짜", "체크아웃 날짜", "상태", "총 금액"];
 
@@ -42,6 +47,19 @@ function renderRow(row, idx) {
 function DepthFrameWrapper({ currentUser }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [stores, setStores] = useState([]);
+  const [activeStore, setActiveStore] = useState("전체");
+
+  const loadStores = async () => {
+      const token = localStorage.getItem("token");
+      const data = await fetchStores(token);
+      setStores(data || []);
+  };
+
+  useEffect(() => {
+      loadStores();
+
+  }, []);
 
   const handleSearch = () => {
     setSearchTerm(searchInput);
@@ -59,7 +77,15 @@ function DepthFrameWrapper({ currentUser }) {
           <p className="text-[#888] mb-8">
             호텔 예약 현황을 관리하고 확인할 수 있습니다.
           </p>
-
+          {/* Source Tabs */}
+          <StoreTab>
+              <StoreButton>전체</StoreButton>
+              {stores.map((store, index) => (
+                  <StoreButton key={store.id || index}>
+                      {store.name}
+                  </StoreButton>
+              ))}
+          </StoreTab>
           {/* 검색 필터 */}
           <div className="bg-white rounded-xl shadow p-6 mb-6">
             <h2 className="text-lg font-bold text-[#222] mb-4">예약 검색</h2>

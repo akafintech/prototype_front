@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Layout from "@/components/Layout";
+import tw from "tailwind-styled-components";
+import { fetchStores } from "@/api/store";
+
+const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
+const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
 
 const rooms = [
   { number: "101", type: "Standard", status: "사용 가능", cleaning: "청소 완료", memo: "배개 2개 있음" },
@@ -16,6 +21,7 @@ const rooms = [
 
 function Dropdown({ value, onChange, options }) {
   const [open, setOpen] = useState(false);
+  
 
   return (
     <div className="relative inline-block text-left">
@@ -54,6 +60,9 @@ function ReserveIndex({ currentUser }) {
   const [filterStatus, setFilterStatus] = useState("전체");
   const [filterCleaning, setFilterCleaning] = useState("전체");
 
+  const [stores, setStores] = useState([]);
+  const [activeStore, setActiveStore] = useState("전체");
+
   const filteredRooms = rooms.filter((room) => {
     const matchType = filterType === "전체" || room.type === filterType;
     const matchStatus = filterStatus === "전체" || room.status === filterStatus;
@@ -64,11 +73,32 @@ function ReserveIndex({ currentUser }) {
     return matchType && matchStatus && matchCleaning && matchSearch;
   });
 
+  
+  const loadStores = async () => {
+      const token = localStorage.getItem("token");
+      const data = await fetchStores(token);
+      setStores(data || []);
+  };
+
+  useEffect(() => {
+      loadStores();
+
+  }, []);
+
   return (
     <Layout>
       <div className="px-6 py-5 w-full bg-[#F6F8FB] min-h-screen">
         <h1 className="text-3xl font-bold text-[#222] mb-2">객실 관리</h1>
         <p className="text-[#888] mb-6">객실 재고, 상태, 세부정보를 관리합니다.</p>
+        {/* Source Tabs */}
+        <StoreTab>
+            <StoreButton>전체</StoreButton>
+            {stores.map((store, index) => (
+                <StoreButton key={store.id || index}>
+                    {store.name}
+                </StoreButton>
+            ))}
+        </StoreTab>
 
         {/* 검색창 */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
