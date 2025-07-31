@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@/config/api";
 
 export async function fetchReviews(token, store,pageNum) {
     const encodedStore = encodeURIComponent(store);
-    const res = await fetch(`${API_BASE_URL}/review/list/${encodedStore}`, {
+    const res = await fetch(`${API_BASE_URL}/review/list/${encodedStore}?offset=${pageNum}&limit=10`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.json().then(data => ({ ok: res.ok, data }));
