@@ -14,7 +14,8 @@ const privatePaths = [
   "/room",
   "/report",
   "/review",
-  "/settings"
+  "/settings",
+  "/customer"
 ];
 
 function AuthGuard({ children }) {

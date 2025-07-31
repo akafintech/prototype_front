@@ -1,6 +1,6 @@
 const API_BASE_URL =  "http://localhost:8000";
 
-export async function fetchReviews(token, store) {
+export async function fetchReviews(token, store,pageNum) {
     const encodedStore = encodeURIComponent(store);
     const res = await fetch(`${API_BASE_URL}/review/list/${encodedStore}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -31,6 +31,22 @@ export async function fetchUpdateReview(token, reviewId, content) {
         is_replied: content.isReplied
        }),
     });
-    console.log("Update Review Response:", res);
     return res.json().then(data => ({ ok: res.ok, data }));
   }
+
+export async function fetchCreateReview(token,reviewer,rating,store,content) {
+  const res = await fetch(`${API_BASE_URL}/review/create`, {
+    method: "POST",
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+     },
+    body: JSON.stringify({ 
+      content: content,
+      rating: rating,
+      reviewer: reviewer,
+      store:store
+     }),
+  });
+  return res.json().then(data => ({ ok: res.ok, data }));
+}

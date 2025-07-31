@@ -1,7 +1,6 @@
 // pages/reviews.js
 import React, { useState, useEffect } from "react";
 import tw from "tailwind-styled-components";
-import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { fetchStores } from "@/api/store";
 import { fetchRecommend } from "@/api/recommend";
@@ -36,6 +35,11 @@ function ReviewIndex() {
     // jinnam
     const [stores, setStores] = useState([]);
     const [activeStore, setActiveStore] = useState("전체");
+    
+    // 무한 스크롤 관련 상태
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const loadStores = async () => {
         const token = localStorage.getItem("token");
@@ -43,20 +47,34 @@ function ReviewIndex() {
         setStores(data || []);
     };
 
-    const loadReviews = async (store) => {
+    const loadReviews = async (store, pageNum = 1, append = false) => {
         try {
+            setIsLoading(true);
             const token = localStorage.getItem("token");
-            const { ok, data } = await fetchReviews(token, store);
+            const { ok, data } = await fetchReviews(token, store, pageNum);
             if (!ok) {
                 alert(data.detail);
                 return;
             }
-            setReviewsData(data || []);
-            setFilteredReviews(data || []);
+            
+            if (append) {
+                setReviewsData(prev => [...prev, ...(data || [])]);
+                setFilteredReviews(prev => [...prev, ...(data || [])]);
+            } else {
+                setReviewsData(data || []);
+                setFilteredReviews(data || []);
+            }
+            
+            // 더 로드할 데이터가 있는지 확인 (예: 10개씩 로드한다고 가정)
+            setHasMore((data || []).length === 10);
         } catch (error) {
             console.error("리뷰 로드 중 오류:", error);
-            setReviewsData([]);
-            setFilteredReviews([]);
+            if (!append) {
+                setReviewsData([]);
+                setFilteredReviews([]);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -113,7 +131,9 @@ function ReviewIndex() {
     // activeStore 변경 시 리뷰 다시 로드
     useEffect(() => {
         if (activeStore) {
-            loadReviews(activeStore);
+            setPage(1);
+            setHasMore(true);
+            loadReviews(activeStore, 1, false);
         }
     }, [activeStore]);
 
@@ -309,6 +329,28 @@ function ReviewIndex() {
     };
 
 
+    // 스크롤 이벤트 핸들러
+    const handleScroll = () => {
+        if (isLoading || !hasMore) return;
+        
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // 스크롤이 하단에서 100px 이내에 도달하면 더 많은 데이터 로드
+        if (scrollTop + windowHeight >= documentHeight - 100) {
+            const nextPage = page + 1;
+            setPage(nextPage);
+            loadReviews(activeStore, nextPage, true);
+        }
+    };
+
+    // 스크롤 이벤트 리스너 등록
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [page, hasMore, isLoading, activeStore]);
+
     // 필터 초기화
     const resetFilters = () => {
         setSelectedRating("별점 전체");
@@ -316,6 +358,20 @@ function ReviewIndex() {
         setEndDate("");
         setSearchKeyword("");
     };
+
+    // 별점 분포 계산
+    const ratingCounts = [5, 4, 3, 2, 1].map(rating =>
+      filteredReviews.filter(r => r.rating === rating).length
+    );
+    const total = filteredReviews.length;
+    const ratingPercents = ratingCounts.map(count =>
+      total > 0 ? Math.round((count / total) * 100) : 0
+    );
+
+    // 별점 평균 계산
+    const avgRating = total > 0
+      ? (filteredReviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(2)
+      : "0.00";
 
     return (
         <Layout>
@@ -329,7 +385,7 @@ function ReviewIndex() {
                 <div className="bg-white rounded-xl shadow p-6 mb-6">
                     <div className="flex items-center mb-6">
                         <div className="flex items-center mr-6">
-                            <span className="text-4xl font-bold text-[#222] mr-2">4</span>
+                            <span className="text-4xl font-bold text-[#222] mr-2">{avgRating}</span>
                             <div className="flex">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <span key={star} className="text-yellow-400 text-2xl">★</span>
@@ -341,13 +397,13 @@ function ReviewIndex() {
 
                     {/* Rating Distribution Chart */}
                     <div className="space-y-2">
-                        {[5, 4, 3, 2, 1].map((rating) => (
+                        {[5, 4, 3, 2, 1].map((rating, idx) => (
                             <div key={rating} className="flex items-center">
                                 <span className="w-8 text-sm text-[#888]">{rating}★</span>
                                 <div className="flex-1 mx-4 bg-gray-200 rounded-full h-2 relative">
                                     <div
                                         className="bg-blue-500 h-2 rounded-full relative"
-                                        style={{ width: `${rating === 5 ? 40 : rating === 4 ? 30 : rating === 3 ? 15 : rating === 2 ? 10 : 5}%` }}
+                                        style={{ width: `${ratingPercents[idx]}%` }}
                                     >
                                         {rating === 3 && (
                                             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
@@ -357,7 +413,7 @@ function ReviewIndex() {
                                     </div>
                                 </div>
                                 <span className="w-12 text-sm text-[#888] text-right">
-                                    {rating === 5 ? 40 : rating === 4 ? 30 : rating === 3 ? 15 : rating === 2 ? 10 : 5}%
+                                    {ratingPercents[idx]}%
                                 </span>
                             </div>
                         ))}
@@ -470,150 +526,168 @@ function ReviewIndex() {
                             </button>
                         </div>
                     ) : (
-                        filteredReviews.map((review) => {
-                            const replyVersions = recommendResults[review.id] || [];
-                            
-                            return (
-                                <div key={review.id} className="bg-white rounded-xl shadow p-6">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h3 className="font-semibold text-[#222]">{review.reviewer}</h3>
-                                            <p className="text-sm text-[#888]">{review.created_at}</p>
+                        <>
+                            {filteredReviews.map((review) => {
+                                const replyVersions = recommendResults[review.id] || [];
+                                
+                                return (
+                                    <div key={review.id} className="bg-white rounded-xl shadow p-6">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h3 className="font-semibold text-[#222]">{review.reviewer}</h3>
+                                                <p className="text-sm text-[#888]">{review.created_at}</p>
+                                            </div>
+                                            <div className="flex">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span
+                                                        key={star}
+                                                        className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                    >
+                                                        ★
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div className="flex">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <span
-                                                    key={star}
-                                                    className={`text-lg ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                                                >
-                                                    ★
-                                                </span>
-                                            ))}
+                                        <p className="text-[#222] mb-4">{review.content}</p>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-sm text-[#888]">{review.thumbsUp}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-sm text-[#888]">{review.thumbsDown}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <p className="text-[#222] mb-4">{review.content}</p>
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="flex items-center gap-1">
-                                            <span className="text-sm text-[#888]">{review.thumbsUp}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <span className="text-sm text-[#888]">{review.thumbsDown}</span>
-                                        </div>
-                                    </div>
 
-                                    {/* AI Reply Section for each review */}
-                                    <div className="border-t pt-4">
-                                        {/* AI Reply Options */}
-                                        {(showOptionsFor === review.id || editModeFor[review.id]) && (
-                                            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                                                <h5 className="font-medium text-[#222] mb-3">
-                                                    AI 답변 버전을 선택해주세요:
-                                                </h5>
-                                                <div className="space-y-2">
-                                                    {replyVersions.map((version) => (
-                                                        <button
-                                                            key={version.id}
-                                                            onClick={() => handleSelectVersion(review.id, version)}
-                                                            className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                                                                selectedVersionFor[review.id] === version.id
-                                                                    ? 'border-blue-500 bg-blue-50'
-                                                                    : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
-                                                            }`}
-                                                        >
-                                                            <div className="font-medium text-[#222] mb-1">{version.title || `버전 ${version.id}`}</div>
-                                                            <div className="text-sm text-gray-600 min-h-[3rem] whitespace-pre-wrap">
-                                                                {isPreviewing[`${review.id}-${version.id}`]
-                                                                    ? previewText[`${review.id}-${version.id}`] || ""
-                                                                    : version.text
-                                                                }
-                                                            </div>
-                                                        </button>
-                                                    ))}
+                                        {/* AI Reply Section for each review */}
+                                        <div className="border-t pt-4">
+                                            {/* AI Reply Options */}
+                                            {(showOptionsFor === review.id || editModeFor[review.id]) && (
+                                                <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                                                    <h5 className="font-medium text-[#222] mb-3">
+                                                        AI 답변 버전을 선택해주세요:
+                                                    </h5>
+                                                    <div className="space-y-2">
+                                                        {replyVersions.map((version) => (
+                                                            <button
+                                                                key={version.id}
+                                                                onClick={() => handleSelectVersion(review.id, version)}
+                                                                className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                                                                    selectedVersionFor[review.id] === version.id
+                                                                        ? 'border-blue-500 bg-blue-50'
+                                                                        : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                                                                }`}
+                                                            >
+                                                                <div className="font-medium text-[#222] mb-1">{version.title || `버전 ${version.id}`}</div>
+                                                                <div className="text-sm text-gray-600 min-h-[3rem] whitespace-pre-wrap">
+                                                                    {isPreviewing[`${review.id}-${version.id}`]
+                                                                        ? previewText[`${review.id}-${version.id}`] || ""
+                                                                        : version.text
+                                                                    }
+                                                                </div>
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-
-                                        <textarea
-                                            className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
-                                            placeholder="AI가 생성한 답변을 여기에 표시합니다."
-                                            value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
-                                            readOnly={false}
-                                            onChange={(e) => {
-                                                const newValue = e.target.value;
-                                                
-                                                if (editModeFor[review.id]) {
-                                                    setEditTextFor(prev => ({ ...prev, [review.id]: newValue }));
-                                                } else {
-                                                    setReviewsData(prev => prev.map(r => 
-                                                        r.id === review.id 
-                                                            ? { ...r, reply: newValue }
-                                                            : r
-                                                    ));
-                                                }
-                                            }}
-                                        />
-                                        
-                                        {selectedVersionFor[review.id] && !editModeFor[review.id] && (
-                                            <div className="mb-3 text-sm text-blue-600">
-                                                선택된 버전: {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title || `버전 ${selectedVersionFor[review.id]}`}
-                                            </div>
-                                        )}
-
-                                        <div className="flex justify-end gap-3">
-                                            {!editModeFor[review.id] && (
-                                                <>
-                                                    <button 
-                                                        className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
-                                                        onClick={() => handleGenerateReply(review)}
-                                                    >
-                                                        생성하기
-                                                    </button>
-                                                    <button 
-                                                        className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg cursor-pointer"
-                                                        onClick={() => handleSubmitReply(review.id)}
-                                                    >
-                                                        답변달기
-                                                    </button>
-                                                    {review.isReplied && (
-                                                        <>
-                                                            <button 
-                                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600"
-                                                                onClick={() => handleEditReply(review.id)}
-                                                            >
-                                                                수정하기
-                                                            </button>
-                                                            <button 
-                                                                className="px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer hover:bg-red-600"
-                                                                onClick={() => handleDeleteReply(review.id)}
-                                                            >
-                                                                삭제하기
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </>
                                             )}
+
+                                            <textarea
+                                                className="w-full h-24 p-3 border border-[#E5E7EB] rounded-lg bg-white text-[#222] resize-none mb-3"
+                                                placeholder="AI가 생성한 답변을 여기에 표시합니다."
+                                                value={editModeFor[review.id] ? editTextFor[review.id] || "" : review.reply}
+                                                readOnly={false}
+                                                onChange={(e) => {
+                                                    const newValue = e.target.value;
+                                                    
+                                                    if (editModeFor[review.id]) {
+                                                        setEditTextFor(prev => ({ ...prev, [review.id]: newValue }));
+                                                    } else {
+                                                        setReviewsData(prev => prev.map(r => 
+                                                            r.id === review.id 
+                                                                ? { ...r, reply: newValue }
+                                                                : r
+                                                        ));
+                                                    }
+                                                }}
+                                            />
                                             
-                                            {editModeFor[review.id] && (
-                                                <>
-                                                    <button 
-                                                        className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
-                                                        onClick={() => handleCancelEdit(review.id)}
-                                                    >
-                                                        취소
-                                                    </button>
-                                                    <button 
-                                                        className="px-4 py-2 bg-green-500 text-white rounded-lg cursor-pointer hover:bg-green-600"
-                                                        onClick={() => handleSaveEdit(review.id)}
-                                                    >
-                                                        저장
-                                                    </button>
-                                                </>
+                                            {selectedVersionFor[review.id] && !editModeFor[review.id] && (
+                                                <div className="mb-3 text-sm text-blue-600">
+                                                    선택된 버전: {replyVersions.find(v => v.id === selectedVersionFor[review.id])?.title || `버전 ${selectedVersionFor[review.id]}`}
+                                                </div>
                                             )}
+
+                                            <div className="flex justify-end gap-3">
+                                                {!editModeFor[review.id] && (
+                                                    <>
+                                                        <button 
+                                                            className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
+                                                            onClick={() => handleGenerateReply(review)}
+                                                        >
+                                                            생성하기
+                                                        </button>
+                                                        <button 
+                                                            className="px-4 py-2 bg-[#e8edf2] text-black rounded-lg cursor-pointer"
+                                                            onClick={() => handleSubmitReply(review.id)}
+                                                        >
+                                                            답변달기
+                                                        </button>
+                                                        {review.isReplied && (
+                                                            <>
+                                                                <button 
+                                                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600"
+                                                                    onClick={() => handleEditReply(review.id)}
+                                                                >
+                                                                    수정하기
+                                                                </button>
+                                                                <button 
+                                                                    className="px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer hover:bg-red-600"
+                                                                    onClick={() => handleDeleteReply(review.id)}
+                                                                >
+                                                                    삭제하기
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                                
+                                                {editModeFor[review.id] && (
+                                                    <>
+                                                        <button 
+                                                            className="px-4 py-2 border border-[#E5E7EB] text-black rounded-lg cursor-pointer"
+                                                            onClick={() => handleCancelEdit(review.id)}
+                                                        >
+                                                            취소
+                                                        </button>
+                                                        <button 
+                                                            className="px-4 py-2 bg-green-500 text-white rounded-lg cursor-pointer hover:bg-green-600"
+                                                            onClick={() => handleSaveEdit(review.id)}
+                                                        >
+                                                            저장
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
+                                );
+                            })}
+                            
+                            {/* 로딩 인디케이터 */}
+                            {isLoading && (
+                                <div className="bg-white rounded-xl shadow p-8 text-center">
+                                    <div className="text-blue-500 text-lg mb-2">⏳</div>
+                                    <p className="text-gray-600">리뷰를 불러오는 중...</p>
                                 </div>
-                            );
-                        })
+                            )}
+                            
+                            {/* 더 이상 로드할 데이터가 없을 때 */}
+                            {!hasMore && filteredReviews.length > 0 && (
+                                <div className="bg-white rounded-xl shadow p-8 text-center">
+                                    <div className="text-gray-400 text-lg mb-2">📄</div>
+                                    <p className="text-gray-600">모든 리뷰를 불러왔습니다.</p>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
                 </main>
