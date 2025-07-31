@@ -38,3 +38,39 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+# 프로젝트 설정
+
+## 환경 변수 설정
+
+### 1. 로컬 개발 환경
+프로젝트 루트에 `.env.local` 파일을 생성하고 다음 내용을 추가하세요:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+### 2. 외부 IP 사용 시
+외부 IP를 사용하려면 `.env.local` 파일에서 다음과 같이 설정하세요:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://192.168.1.100:8000
+```
+
+### 3. 프로덕션 환경
+프로덕션 환경에서는 실제 서버 URL로 설정하세요:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://your-api-server.com
+```
+
+## API 설정 중앙 관리
+
+모든 API 호출은 `src/config/api.js`에서 중앙 관리됩니다. 
+환경 변수가 설정되지 않은 경우 기본값으로 `http://localhost:8000`을 사용합니다.
+
+## 사용법
+
+1. 환경 변수 파일 생성 후 서버 재시작
+2. 모든 API 호출이 자동으로 설정된 URL을 사용
+3. 환경별로 다른 URL 사용 가능 (개발/스테이징/프로덕션)

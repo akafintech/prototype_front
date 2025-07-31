@@ -1,4 +1,4 @@
-const API_BASE_URL =  "http://localhost:8000";
+import { API_BASE_URL } from "@/config/api";
 
 export async function fetchRecommend(token,storename,username,rating) {
   const res = await fetch(`${API_BASE_URL}/recommend/create`, {

@@ -1,4 +1,4 @@
-const API_BASE_URL =  "http://localhost:8000";
+import { API_BASE_URL } from "@/config/api";
 
 export async function fetchStores(token) {
   const res = await fetch(`${API_BASE_URL}/store/list`, {
