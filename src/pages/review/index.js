@@ -9,6 +9,19 @@ import { fetchReviews,fetchUpdateReview,fetchDeleteReview } from "@/api/review";
 const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
 const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
 
+function checkFirstCharType(str) {
+  if (!str) return '빈 문자열';
+
+  const firstChar = str[0];
+
+  if (/^[A-Za-z]$/.test(firstChar)) {
+    return '영어';
+  } else if (/^[가-힣]$/.test(firstChar)) {
+    return '한글';
+  } else {
+    return '기타';
+  }
+}
 
 function ReviewIndex() {
     const [reviewsData, setReviewsData] = useState([]);
@@ -142,8 +155,9 @@ function ReviewIndex() {
         setSelectedVersionFor(prev => ({ ...prev, [review.id]: null }));
         const token = localStorage.getItem("token");
         const data = await fetchRecommend(token, review.store, review.reviewer, review.rating);
-        const results = data.results;
-        console.log("results",results);
+
+        const results = checkFirstCharType(review.content) === '한글'?data.results:data.results_en;
+
 
         if (results.length === 0) {
             alert("답변을 생성할 수 없습니다.");
