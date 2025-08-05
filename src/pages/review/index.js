@@ -5,7 +5,38 @@ import Layout from "@/components/Layout";
 import { fetchStores } from "@/api/store";
 import { fetchRecommend } from "@/api/recommend";
 import { fetchReviews,fetchUpdateReview,fetchDeleteReview } from "@/api/review";
-import { createAutoReview } from "@/api/autoreview";
+import { createAutoReview } from "@/api/autoreview"; //  autoreview.js 경로 확인
+
+const [aiReplies, setAiReplies] = useState([]); // AI 응답 결과 저장
+const handleGenerateReply = async () => {
+  try {
+    const response = await createAutoReview(token, {
+      username: review.reviewer,
+      rating: review.rating,
+      storename: review.store,
+      content: review.content,
+    });
+
+    if (!response.ok) throw new Error("AI 응답 생성 실패");
+
+    const data = response.data;
+
+    const isKorean = checkFirstCharType(review.content) === '한글';
+    const selectedResults = isKorean ? data.results : data.results_en;
+
+    if (!selectedResults || selectedResults.length === 0) {
+      console.warn("AI 응답 결과가 없습니다.");
+      setAiReplies([]);
+      return;
+    }
+
+    setAiReplies(selectedResults); // ✅ 3개 결과 저장
+  } catch (error) {
+    console.error("리뷰 응답 생성 실패:", error.message);
+    setAiReplies([]);
+  }
+};
+
 
 const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
 const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;

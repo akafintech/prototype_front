@@ -1,34 +1,30 @@
+// frontend/api/autoreview.js
 import { API_BASE_URL } from "@/config/api";
 
 export async function createAutoReview(token, reviewData) {
   try {
-    console.log('Autoreview API 호출:', {
+    console.log("Autoreview API 호출:", {
       url: `${API_BASE_URL}/autoreview/create`,
-      data: reviewData
+      data: reviewData,
     });
 
     const res = await fetch(`${API_BASE_URL}/autoreview/create`, {
       method: "POST",
-      headers: { 
+      headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        username: reviewData.username,
-        rating: reviewData.rating,
-        storename: reviewData.storename,
-        content: reviewData.content
-      }),
+      body: JSON.stringify(reviewData), // ✅ 구조가 이미 맞춰져 있다면 바로 전달
     });
 
-    console.log('API 응답 상태:', res.status, res.statusText);
-    
+    console.log("API 응답 상태:", res.status, res.statusText);
+
     const data = await res.json();
-    console.log('API 응답 데이터:', data);
-    
+    console.log("API 응답 데이터:", data);
+
     return { ok: res.ok, data };
   } catch (error) {
-    console.error('Autoreview API 오류:', error);
+    console.error("Autoreview API 오류:", error);
     throw error;
   }
-} 
+}
