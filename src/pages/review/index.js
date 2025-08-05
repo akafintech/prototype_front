@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { fetchStores } from "@/api/store";
 import { fetchRecommend } from "@/api/recommend";
 import { fetchReviews,fetchUpdateReview,fetchDeleteReview } from "@/api/review";
+import { createAutoReview } from "@/api/autoreview";
 
 const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
 const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
@@ -153,24 +154,52 @@ function ReviewIndex() {
     const handleGenerateReply = async (review) => {
         setShowOptionsFor(review.id);
         setSelectedVersionFor(prev => ({ ...prev, [review.id]: null }));
-        const token = localStorage.getItem("token");
-        const data = await fetchRecommend(token, review.store, review.reviewer, review.rating);
+        
+        try {
+            const token = localStorage.getItem("token");
+            console.log('토큰 확인:', token ? '토큰 있음' : '토큰 없음');
+            
+            // autoreview API 호출
+            const reviewData = {
+                username: review.reviewer,
+                rating: review.rating,
+                storename: review.store,
+                content: review.content
+            };
+            
+            console.log('전송할 데이터:', reviewData);
+            
+            const { ok, data } = await createAutoReview(token, reviewData);
+            
+            console.log('API 응답:', { ok, data });
+            
+            if (!ok) {
+                console.error('API 응답 실패:', data);
+                alert("답변을 생성할 수 없습니다.");
+                return;
+            }
 
-        const results = checkFirstCharType(review.content) === '한글'?data.results:data.results_en;
+            // 언어에 따라 결과 선택
+            const results = checkFirstCharType(review.content) === '한글' ? data.results : data.results_en;
+            console.log('선택된 결과:', results);
 
-
-        if (results.length === 0) {
+            if (!results || results.length === 0) {
+                console.error('결과가 없음:', data);
+                alert("답변을 생성할 수 없습니다.");
+                return;
+            }
+            
+            // 결과를 상태에 저장
+            setRecommendResults(prev => ({ ...prev, [review.id]: results }));
+            
+            // 각 결과에 대해 타이핑 애니메이션 시작
+            results.forEach((result) => {
+                previewTypeText(review.id, result.id, result.text);
+            });
+        } catch (error) {
+            console.error("답변 생성 중 오류:", error);
             alert("답변을 생성할 수 없습니다.");
-            return;
         }
-        
-        // 결과를 상태에 저장
-        setRecommendResults(prev => ({ ...prev, [review.id]: results }));
-        
-        // 각 결과에 대해 타이핑 애니메이션 시작
-        results.forEach((result) => {
-            previewTypeText(review.id, result.id, result.text);
-        });
     };
 
     // 미리보기 타이핑 애니메이션 함수
