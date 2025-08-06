@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
+const BACKGROUND_IMAGE_URL = "C:/Users/Admin/Desktop/workplace/prototype_front/public/login_bg.png";
+
 function renderInput({ label, type, placeholder, required = false, value, onChange, name, error }) {
   return (
     <div>
@@ -23,22 +25,30 @@ function renderInput({ label, type, placeholder, required = false, value, onChan
 
 export default function MyInfos() {
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(false);
+  // const [isLogin, setIsLogin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
-    username: "",
-    phone: "",
-    referralCode: ""
+    // confirmPassword: "",
+    // username: "",
+    // phone: "",
+    // referralCode: ""
   });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // 컴포넌트 마운트 시 로그인 상태 확인
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const goToRegister = () => {
+    router.push("/register");
+  };
+
   useEffect(() => {
     checkLoginStatus();
   }, []);
@@ -304,35 +314,22 @@ export default function MyInfos() {
 
   // 로그인/회원가입 폼
   return (
-    <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
-      {/* Main Content */}
-      <main className="flex-1 px-8 py-10">
-        <h1 className="text-3xl font-bold text-[#222] mb-2">{isLogin ? "로그인" : "회원가입"}</h1>
-        <p className="text-[#888] mb-8">
-          {isLogin ? "계정에 로그인하세요." : "새로운 계정을 만들어보세요."}
-        </p>
-
-        {/* 로그인/회원가입 폼 */}
-        <div className="bg-white rounded-xl shadow p-6 max-w-md mx-auto">
-          <div className="flex mb-6">
-            <button
-              onClick={() => handleModeChange(false)}
-              className={`flex-1 py-2 px-4 rounded-l-lg font-medium transition-colors ${
-                !isLogin ? 'bg-[#e8edf2] text-black' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              회원가입
-            </button>
-            <button
-              onClick={() => handleModeChange(true)}
-              className={`flex-1 py-2 px-4 rounded-r-lg font-medium transition-colors ${
-                isLogin ? 'bg-[#e8edf2] text-black' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              로그인
-            </button>
-          </div>
-
+      <div
+        className="flex items-center justify-center min-h-screen relative"
+        style={{
+          backgroundImage: `url('${BACKGROUND_IMAGE_URL}')`, 
+          backgroundSize: 'cover',                             
+          backgroundPosition: 'center',                         
+          backgroundRepeat: 'no-repeat',                    
+          height: '100vh',
+        }}
+      >
+      <div className="absolute inset-0 bg-white bg-opacity-70" style={{zIndex: 0}}></div>
+      {/* 메인 로그인 폼 */}
+      <main className="relative z-10 flex-1 px-8 py-10 flex flex-col items-center justify-center">
+        <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full mx-auto">
+          <h1 className="text-3xl font-bold text-[#222] mb-2 text-center">로그인</h1>
+          <p className="text-[#888] mb-8 text-center">계정에 로그인하세요.</p>
           {message && (
             <div className={`mb-4 p-3 rounded-lg text-sm ${
               message.includes('성공') || message.includes('완료') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -354,57 +351,15 @@ export default function MyInfos() {
                 error: errors.email
               })}
               
-              {!isLogin && renderInput({ 
-                label: "사용자명", 
-                type: "text", 
-                placeholder: "사용자명을 입력하세요", 
-                required: true,
-                value: formData.username,
-                onChange: handleInputChange,
-                name: "username",
-                error: errors.username
-              })}
-              
               {renderInput({ 
                 label: "비밀번호", 
                 type: "password", 
-                placeholder: "비밀번호 입력 (최소 6자)", 
+                placeholder: "비밀번호 입력 (최소 6자)",
                 required: true,
                 value: formData.password,
                 onChange: handleInputChange,
                 name: "password",
                 error: errors.password
-              })}
-              
-              {!isLogin && renderInput({ 
-                label: "비밀번호 확인", 
-                type: "password", 
-                placeholder: "비밀번호 재입력", 
-                required: true,
-                value: formData.confirmPassword,
-                onChange: handleInputChange,
-                name: "confirmPassword",
-                error: errors.confirmPassword
-              })}
-              
-              {!isLogin && renderInput({ 
-                label: "휴대폰 번호", 
-                type: "tel", 
-                placeholder: "숫자와 하이픈(-)만 입력", 
-                required: true,
-                value: formData.phone,
-                onChange: handleInputChange,
-                name: "phone",
-                error: errors.phone
-              })}
-              
-              {!isLogin && renderInput({ 
-                label: "추천인 코드", 
-                type: "text", 
-                placeholder: "추천인 코드 입력 (선택사항)",
-                value: formData.referralCode,
-                onChange: handleInputChange,
-                name: "referralCode"
               })}
             </div>
             
@@ -418,19 +373,20 @@ export default function MyInfos() {
                   : 'bg-[#e8edf2] text-black hover:bg-[#d1d8e0]'
               }`}
             >
-              {isLoading ? "처리중..." : (isLogin ? "로그인" : "가입하기")}
+              {isLoading ? "처리중..." : "로그인"}
             </button>
           </form>
 
           {/* 추가 링크 */}
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <p className="text-sm text-gray-600">
-              {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요? "}
+              계정이 없으신가요?{" "}
               <button
-                onClick={() => handleModeChange(!isLogin)}
+                onClick={goToRegister}
                 className="text-[#e8edf2] hover:underline font-medium"
+                type="button"
               >
-                {isLogin ? "회원가입" : "로그인"}
+                {/* {isLogin ? "회원가입" : "로그인"} */}
               </button>
             </p>
           </div>

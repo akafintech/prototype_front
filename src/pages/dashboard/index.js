@@ -1,21 +1,25 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 import { FaStar } from "react-icons/fa";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
-function DashboardStats() {
+export default function Dashboard() {
   const router = useRouter();
 
   const handleReviewClick = () => {
-    router.push('/review');
+    router.push("/review");
   };
-
-  const dashboardStats = [
-    { label: "예약률", value: "75%" },
-    { label: "평점", value: "4.5/5" },
-    { label: "총 수익", value: "3,200,000원" },
-  ];
 
   const bookingData = [
     { customerName: "김몽몽", roomType: "Deluxe Suite", checkIn: "2025-03-25", checkOut: "2025-03-27", status: "확정" },
@@ -40,6 +44,25 @@ function DashboardStats() {
     },
   ];
 
+  const bookingChartData = [
+    { date: "01", rate: 62 },
+    { date: "02", rate: 71 },
+    { date: "03", rate: 65 },
+    { date: "04", rate: 78 },
+  ];
+
+  const scoreData = [
+    { name: "평점", value: 4.5 },
+    { name: "남은", value: 0.5 },
+  ];
+
+  const incomeChartData = [
+    { date: "01", income: 1000000 },
+    { date: "02", income: 1800000 },
+    { date: "03", income: 2500000 },
+    { date: "04", income: 3200000 },
+  ];
+
   return (
     <Layout>
       <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
@@ -51,12 +74,52 @@ function DashboardStats() {
 
           {/* 통계 카드 */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {dashboardStats.map((stat, index) => (
-              <div key={index} className="flex flex-col items-start gap-2 p-6 bg-[#e8edf4] rounded-lg">
-                <div className="text-sm text-[#0c141c]">{stat.label}</div>
-                <div className="text-2xl font-bold text-[#0c141c]">{stat.value}</div>
-              </div>
-            ))}
+            {/* 예약률 */}
+            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+              <div className="text-sm text-[#0c141c]">예약률</div>
+              <div className="text-2xl font-bold text-[#0c141c]">75%</div>
+              <ResponsiveContainer width="100%" height={60}>
+                <LineChart data={bookingChartData}>
+                  <Line type="monotone" dataKey="rate" stroke="#49729b" strokeWidth={2} dot={{ r: 3 }} />
+                  <XAxis dataKey="date" hide />
+                  <YAxis hide domain={[50, 100]} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* 평점 */}
+            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+              <div className="text-sm text-[#0c141c]">평점</div>
+              <div className="text-2xl font-bold text-[#0c141c]">4.5/5</div>
+              <ResponsiveContainer width="100%" height={60}>
+                <PieChart>
+                  <Pie
+                    data={scoreData}
+                    dataKey="value"
+                    innerRadius={20}
+                    outerRadius={30}
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    <Cell fill="#49729b" />
+                    <Cell fill="#e8edf4" />
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* 총 수익 */}
+            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+              <div className="text-sm text-[#0c141c]">총 수익</div>
+              <div className="text-2xl font-bold text-[#0c141c]">3,200,000원</div>
+              <ResponsiveContainer width="100%" height={60}>
+                <LineChart data={incomeChartData}>
+                  <Line type="monotone" dataKey="income" stroke="#49729b" strokeWidth={2} dot={{ r: 3 }} />
+                  <XAxis dataKey="date" hide />
+                  <YAxis hide />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </section>
 
           {/* 예약 현황 */}
@@ -133,5 +196,3 @@ function DashboardStats() {
     </Layout>
   );
 }
-
-export default withAuth(DashboardStats);

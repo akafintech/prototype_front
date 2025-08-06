@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
 function ReportIndex({ currentUser }) {
-  const [selectedReport, setSelectedReport] = useState("매출분석");
+  const [selectedReport, setSelectedReport] = useState("예약률");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showReport, setShowReport] = useState(false);
+
+  useEffect(() => {
+  setShowReport(false); // 날짜가 변경되면 리포트 숨김
+  }, [startDate, endDate]);
 
   const today = new Date().toISOString().split("T")[0];
   const reportTypes = ["예약률", "매출분석", "리뷰분석", "고객분석"];
@@ -98,7 +101,7 @@ function ReportIndex({ currentUser }) {
         const data = generateLineChartData();
         return (
           <>
-            <div className="text-sm text-[#888] mb-4">최근 월별 매출 변화입니다.</div>
+            <div className="text-sm text-[#888] mb-4">최근 일주일별 매출 변화입니다.</div>
             {renderLineChart(data)}
           </>
         );
@@ -243,4 +246,4 @@ function ReportIndex({ currentUser }) {
   );
 }
 
-export default withAuth(ReportIndex);
+export default ReportIndex;

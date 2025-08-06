@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
+import tw from "tailwind-styled-components";
+import { fetchStores } from "@/api/store";
+
+const StoreTab = tw.div`flex flex-wrap gap-2 mb-4`;
+const StoreButton = tw.button`px-4 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[#888]`;
 
 const rooms = [
-  { number: "101", type: "Standard", status: "사용 가능", cleaning: "청소 완료", memo: "배개 2개 있음" },
-  { number: "102", type: "Deluxe", status: "사용 중", cleaning: "청소 완료", memo: "침구류 상태 최상" },
-  { number: "103", type: "Suite", status: "서비스 중지", cleaning: "청소 전", memo: "공사로 사용 불가" },
-  { number: "104", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "새벽 1시 예약" },
-  { number: "105", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "비품 준비 완료" },
-  { number: "201", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "샤워기 교체 완료" },
-  { number: "202", type: "Standard", status: "사용 가능", cleaning: "청소 전", memo: "바닥 청소 필요" },
-  { number: "203", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "에어컨·냉장고 작동 양호" },
-  { number: "204", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "타월 보충 필요" },
-  { number: "205", type: "Standard", status: "서비스 중지", cleaning: "청소 완료", memo: "샤워기 고장" },
+  { number: "101", type: "Standard", status: "사용 가능", cleaning: "청소 완료", memo: "배개 2개 있음", platform: "야놀자" },
+  { number: "102", type: "Deluxe", status: "사용 중", cleaning: "청소 완료", memo: "침구류 상태 최상", platform: "여기어때" },
+  { number: "103", type: "Suite", status: "서비스 중지", cleaning: "청소 전", memo: "공사로 사용 불가", platform: "야놀자" },
+  { number: "104", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "새벽 1시 예약", platform: "Agoda" },
+  { number: "105", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "비품 준비 완료", platform: "Booking.com" },
+  { number: "201", type: "Standard", status: "사용 중", cleaning: "청소 완료", memo: "샤워기 교체 완료", platform: "여기어때" },
+  { number: "202", type: "Standard", status: "사용 가능", cleaning: "청소 전", memo: "바닥 청소 필요", platform: "Trip.com" },
+  { number: "203", type: "Deluxe", status: "사용 가능", cleaning: "청소 전", memo: "에어컨·냉장고 작동 양호", platform: "야놀자" },
+  { number: "204", type: "Suite", status: "사용 중", cleaning: "청소 완료", memo: "타월 보충 필요", platform: "Booking.com" },
+  { number: "205", type: "Standard", status: "서비스 중지", cleaning: "청소 완료", memo: "샤워기 고장", platform: "Agoda" },
 ];
 
 function Dropdown({ value, onChange, options }) {
@@ -54,22 +58,56 @@ function ReserveIndex({ currentUser }) {
   const [filterType, setFilterType] = useState("전체");
   const [filterStatus, setFilterStatus] = useState("전체");
   const [filterCleaning, setFilterCleaning] = useState("전체");
+  const [platformFilter, setPlatformFilter] = useState("전체");
+
+  const [stores, setStores] = useState([]);
+  const [activeStore, setActiveStore] = useState("전체");
 
   const filteredRooms = rooms.filter((room) => {
     const matchType = filterType === "전체" || room.type === filterType;
     const matchStatus = filterStatus === "전체" || room.status === filterStatus;
     const matchCleaning = filterCleaning === "전체" || room.cleaning === filterCleaning;
+    const matchPlatform = platformFilter === "전체" || room.platform === platformFilter;
     const matchSearch =
       searchTerm === "" ||
       Object.values(room).some((value) => value.includes(searchTerm));
-    return matchType && matchStatus && matchCleaning && matchSearch;
+    return matchType && matchStatus && matchCleaning && matchSearch && matchPlatform;
   });
+
+  const loadStores = async () => {
+    const token = localStorage.getItem("token");
+    const data = await fetchStores(token);
+    setStores(data || []);
+  };
+
+  useEffect(() => {
+    loadStores();
+  }, []);
 
   return (
     <Layout>
       <div className="px-6 py-5 w-full bg-[#F6F8FB] min-h-screen">
         <h1 className="text-3xl font-bold text-[#222] mb-2">객실 관리</h1>
         <p className="text-[#888] mb-6">객실 재고, 상태, 세부정보를 관리합니다.</p>
+
+        {/* Source Tabs */}
+        <StoreTab>
+          <StoreButton
+            onClick={() => setPlatformFilter("전체")}
+            className={`${platformFilter === "전체" ? "bg-[#e8edf2] text-black" : ""}`}
+          >
+            전체
+          </StoreButton>
+          {stores.map((store, index) => (
+            <StoreButton
+              key={store.id || index}
+              onClick={() => setPlatformFilter(store.name)}
+              className={`${platformFilter === store.name ? "bg-[#e8edf2] text-black" : ""}`}
+            >
+              {store.name}
+            </StoreButton>
+          ))}
+        </StoreTab>
 
         {/* 검색창 */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -166,4 +204,4 @@ function ReserveIndex({ currentUser }) {
   );
 }
 
-export default withAuth(ReserveIndex);
+export default ReserveIndex;

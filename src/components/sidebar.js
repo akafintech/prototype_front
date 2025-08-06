@@ -8,6 +8,8 @@ import {
   FaStar,
   FaUserFriends,
   FaCog,
+  FaGlobe,
+  FaQuestionCircle 
 } from "react-icons/fa";
 
 function Menu({ text, url, icon, active }) {
@@ -32,7 +34,7 @@ export default function LeftNavigationBar() {
   const currentPath = router.asPath;
 
   return (
-    <div className="flex flex-col min-h-[800px] items-start relative self-stretch w-full bg-white">
+    <div className="flex flex-col h-screen bg-white">
       {/* 로고 클릭 시 대시보드로 이동 */}
       <Link href="/dashboard">
         <div className="flex items-center gap-3 px-6 py-5 cursor-pointer">
@@ -43,6 +45,7 @@ export default function LeftNavigationBar() {
 
       <div className="flex flex-col gap-2 px-2 w-full">
         <Menu text="대시보드" url="/dashboard" icon={<FaHome />} active={currentPath === "/dashboard"} />
+        <Menu text="플랫폼관리" url="/store" icon={<FaGlobe />} active={currentPath === "/store"} />
         <Menu text="예약관리" url="/reservation" icon={<FaCalendarAlt />} active={currentPath === "/reservation"} />
         <Menu text="객실관리" url="/room" icon={<FaBed />} active={currentPath === "/room"} />
         <Menu text="통계/분석" url="/report" icon={<FaChartBar />} active={currentPath === "/report"} />
@@ -50,6 +53,11 @@ export default function LeftNavigationBar() {
         <Menu text="내 정보" url="/myinfo" icon={<FaUserFriends />} active={currentPath === "/myinfo"} />
         <Menu text="설정" url="/settings" icon={<FaCog />} active={currentPath === "/settings"} />
       </div>
+
+      <div className="mt-auto px-2 py-4 w-full flex flex-col gap-2">
+        <Menu text="도움이 필요하신가요?" url="/support" icon={<FaQuestionCircle />} active={currentPath === "/support"} />
+      </div>
+      
     </div>
   );
 }

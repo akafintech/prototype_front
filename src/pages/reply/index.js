@@ -1,8 +1,7 @@
 import React from "react";
 import Layout from "@/components/Layout";
-import withAuth from "@/components/withAuth";
 
-function ReplyIndex({ currentUser }) {
+function ReplyIndex() {
   return (
     <Layout>
       <div className="min-h-screen bg-[#F6F8FB] flex">
@@ -172,4 +171,4 @@ function ReplyIndex({ currentUser }) {
   );
 }
 
-export default withAuth(ReplyIndex);
+export default ReplyIndex;
