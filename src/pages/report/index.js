@@ -42,7 +42,7 @@ function ReportIndex({ currentUser }) {
 
     const baseKeywords = [
       "깨끗해요", "직원 친절", "위치 최고", "가성비",
-      "다시 오고 싶어요", "조용함", "수압 세네요", "아늑해요"
+      "침구", "조용함", "뷰", "아늑"
     ];
 
     const keywords = baseKeywords.map((word, idx) => {
@@ -101,7 +101,7 @@ function ReportIndex({ currentUser }) {
         const data = generateLineChartData();
         return (
           <>
-            <div className="text-sm text-[#888] mb-4">최근 일주일별 매출 변화입니다.</div>
+            <div className="text-sm text-[#888] mb-4">최근 별 매출 변화입니다.</div>
             {renderLineChart(data)}
           </>
         );
@@ -163,6 +163,13 @@ function ReportIndex({ currentUser }) {
               <li>가족 고객 비율: 전체의 35%</li>
               <li>고객 재방문율: 22%</li>
               <li>가장 인기 있는 객실 타입: 디럭스룸</li>
+
+              {/* 🔽 여기에 아래 항목들 추가 🔽 */}
+              <li>예약 시기: 체크인 7일 전 예약이 45%로 가장 많음</li>
+              <li>예약 취소율: 8%</li>
+              <li>고객 성별 비율: 남성 48%, 여성 52%</li>
+              <li>고객 연령대: 20대 15%, 30대 25%, 40대 35%, 50대 이상 25%</li>
+              <li>평균 숙박 일수: 1.8일</li>
             </ul>
           </div>
         );

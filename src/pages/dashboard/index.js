@@ -9,9 +9,9 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
+  BarChart,
+  Bar,
+  Cell
 } from "recharts";
 
 export default function Dashboard() {
@@ -30,18 +30,8 @@ export default function Dashboard() {
   ];
 
   const reviewData = [
-    {
-      username: "dk**",
-      date: "2025-06-15",
-      comment: "Exceptional service and a truly memorable stay. The staff went above and beyond to ensure our comfort. Highly recommend!",
-      rating: 5,
-    },
-    {
-      username: "li**",
-      date: "2025-05-20",
-      comment: "가성비 좋아요. 다음에도 오고싶어요.",
-      rating: 4,
-    },
+    { username: "dk**", date: "2025-06-15", comment: "Exceptional service and a truly memorable stay. The staff went above and beyond to ensure our comfort. Highly recommend!", rating: 5 },
+    { username: "li**", date: "2025-05-20", comment: "가성비 좋아요. 다음에도 오고싶어요.", rating: 4 },
   ];
 
   const bookingChartData = [
@@ -51,9 +41,12 @@ export default function Dashboard() {
     { date: "04", rate: 78 },
   ];
 
-  const scoreData = [
-    { name: "평점", value: 4.5 },
-    { name: "남은", value: 0.5 },
+  const scoreBarData = [
+    { rating: "1", count: 1 },
+    { rating: "2", count: 1 },
+    { rating: "3", count: 2 },
+    { rating: "4", count: 4 },
+    { rating: "5", count: 3 },
   ];
 
   const incomeChartData = [
@@ -72,11 +65,9 @@ export default function Dashboard() {
             <p className="text-[#888]">호텔 운영에 필요한 주요 지표를 한눈에 확인할 수 있습니다.</p>
           </div>
 
-          {/* 통계 카드 */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* 예약률 */}
             <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
-              <div className="text-sm text-[#0c141c]">예약률</div>
+              <div className="text-base font-semibold text-[#0c141c]">예약률</div>
               <div className="text-2xl font-bold text-[#0c141c]">75%</div>
               <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={bookingChartData}>
@@ -87,30 +78,36 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
 
-            {/* 평점 */}
             <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
-              <div className="text-sm text-[#0c141c]">평점</div>
+              <div className="text-base font-semibold text-[#0c141c]">평점</div>
               <div className="text-2xl font-bold text-[#0c141c]">4.5/5</div>
-              <ResponsiveContainer width="100%" height={60}>
-                <PieChart>
-                  <Pie
-                    data={scoreData}
-                    dataKey="value"
-                    innerRadius={20}
-                    outerRadius={30}
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    <Cell fill="#49729b" />
-                    <Cell fill="#e8edf4" />
-                  </Pie>
-                </PieChart>
+              <ResponsiveContainer width="100%" height={140}>
+                <BarChart
+                  data={scoreBarData}
+                  layout="vertical"
+                  margin={{ top: 5, right: 10, bottom: 5, left: 10 }}
+                  barGap={5}
+                >
+                  <XAxis type="number" hide domain={[0, 5]} />
+                  <YAxis 
+                    dataKey="rating" 
+                    type="category" 
+                    width={24} 
+                    tick={{ fill: "#0c141c", fontSize: 12 }} 
+                    axisLine={false} 
+                    tickLine={false}
+                  />
+                  <Bar dataKey="count" barSize={12} radius={[6, 6, 6, 6]} background={{ fill: "#fff", radius: [6, 6, 6, 6] }}>
+                    {scoreBarData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill="#49729b" />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* 총 수익 */}
             <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
-              <div className="text-sm text-[#0c141c]">총 수익</div>
+              <div className="text-base font-semibold text-[#0c141c]">총 수익</div>
               <div className="text-2xl font-bold text-[#0c141c]">3,200,000원</div>
               <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={incomeChartData}>
@@ -122,7 +119,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* 예약 현황 */}
           <section className="mb-8">
             <h2 className="text-xl font-bold text-[#222] mb-4">최근 예약 현황</h2>
             <div className="bg-white rounded-xl shadow p-6">
@@ -157,7 +153,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* 고객 리뷰 */}
           <section className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[#222]">고객 리뷰</h2>
