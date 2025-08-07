@@ -17,7 +17,7 @@ function Menu({ text, url, icon, active }) {
     <Link href={url || "#"} passHref>
       <div
         className={`flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer w-full
-          ${active ? "bg-gray-100 text-black font-semibold" : "text-gray-500 hover:bg-gray-100"}
+          ${active ? "bg-orange-100 text-black font-semibold" : "text-gray-500 hover:bg-sky-100"}
         `}
       >
         <span className={`text-xl ${active ? "text-black" : "text-gray-400"}`}>
@@ -34,7 +34,7 @@ export default function LeftNavigationBar() {
   const currentPath = router.asPath;
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-[#FFFCF7]">
       {/* 로고 클릭 시 대시보드로 이동 */}
       <Link href="/dashboard">
         <div className="flex items-center gap-3 px-6 py-5 cursor-pointer">

@@ -43,7 +43,7 @@ export default function Header() {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  className="bg-[#d97706] text-white px-4 py-2 rounded-lg hover:bg-[#cc5500] transition-colors"
                 >
                   로그아웃
                 </button>

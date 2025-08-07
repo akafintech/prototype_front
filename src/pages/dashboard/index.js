@@ -58,7 +58,7 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
+      <div className="bg-white flex items-start justify-center gap-1 px-6 py-5 relative flex-1 self-stretch w-full grow">
         <main className="flex-1 px-8 py-10">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-[#222] mb-2">대시보드</h1>
@@ -66,19 +66,19 @@ export default function Dashboard() {
           </div>
 
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+            <div className="flex flex-col gap-2 p-6 bg-white border border-[#f0e9dd] rounded-lg">
               <div className="text-base font-semibold text-[#0c141c]">예약률</div>
               <div className="text-2xl font-bold text-[#0c141c]">75%</div>
               <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={bookingChartData}>
-                  <Line type="monotone" dataKey="rate" stroke="#49729b" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="rate" stroke="#f6b26b" strokeWidth={2} dot={{ r: 3 }} />
                   <XAxis dataKey="date" hide />
                   <YAxis hide domain={[50, 100]} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+            <div className="flex flex-col gap-2 p-6 bg-white border border-[#f0e9dd] rounded-lg">
               <div className="text-base font-semibold text-[#0c141c]">평점</div>
               <div className="text-2xl font-bold text-[#0c141c]">4.5/5</div>
               <ResponsiveContainer width="100%" height={140}>
@@ -97,21 +97,21 @@ export default function Dashboard() {
                     axisLine={false} 
                     tickLine={false}
                   />
-                  <Bar dataKey="count" barSize={12} radius={[6, 6, 6, 6]} background={{ fill: "#fff", radius: [6, 6, 6, 6] }}>
+                  <Bar dataKey="count" barSize={12} radius={[6, 6, 6, 6]} background={{ fill: "#f3f1ee", radius: [6, 6, 6, 6] }}>
                     {scoreBarData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill="#49729b" />
+                      <Cell key={`cell-${index}`} fill="#f6b26b" />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-col gap-2 p-6 bg-[#e8edf4] rounded-lg">
+            <div className="flex flex-col gap-2 p-6	bg-white border border-[#f0e9dd] rounded-lg">
               <div className="text-base font-semibold text-[#0c141c]">총 수익</div>
               <div className="text-2xl font-bold text-[#0c141c]">3,200,000원</div>
               <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={incomeChartData}>
-                  <Line type="monotone" dataKey="income" stroke="#49729b" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="income" stroke="#f6b26b" strokeWidth={2} dot={{ r: 3 }} />
                   <XAxis dataKey="date" hide />
                   <YAxis hide />
                 </LineChart>
@@ -141,7 +141,7 @@ export default function Dashboard() {
                         <td className="px-4 py-2 text-sm text-[#49729b]">{booking.checkIn}</td>
                         <td className="px-4 py-2 text-sm text-[#49729b]">{booking.checkOut}</td>
                         <td className="px-4 py-2 text-center">
-                          <span className="inline-block w-full bg-[#e8edf2] rounded-lg px-4 py-1 text-sm text-[#0c141c]">
+                          <span className="inline-block w-full bg-[#fcefdc] border border-[#f0e9dd] rounded-lg px-4 py-1 text-sm text-[#0c141c]">
                             {booking.status}
                           </span>
                         </td>

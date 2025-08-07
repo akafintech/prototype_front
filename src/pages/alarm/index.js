@@ -143,13 +143,13 @@ export default function AlarmReviewPage() {
                 <div className="flex justify-end mt-2 gap-2">
                   <button
                     onClick={() => handleGenerate(r.id)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400"
+                    className="px-4 py-2 bg-white border border-[#E5E7EB] text-black rounded-lg text-sm"
                   >
                     답변 생성
                   </button>
                   <button
                     onClick={() => handleSubmit(r.id)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#fcefdc] text-black rounded-lg text-sm"
                   >
                     답변 등록
                   </button>
