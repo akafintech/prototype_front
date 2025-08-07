@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 
 function ReportIndex({ currentUser }) {
-  const [selectedReport, setSelectedReport] = useState("매출분석");
+  const [selectedReport, setSelectedReport] = useState("예약률");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showReport, setShowReport] = useState(false);
+
+  useEffect(() => {
+    setShowReport(false); // 날짜가 변경되면 리포트 숨김
+  }, [startDate, endDate]);
 
   const today = new Date().toISOString().split("T")[0];
   const reportTypes = ["예약률", "매출분석", "리뷰분석", "고객분석"];
@@ -37,8 +41,9 @@ function ReportIndex({ currentUser }) {
     const diffDays = Math.max(1, Math.floor((end - start) / (1000 * 60 * 60 * 24)));
 
     const baseKeywords = [
-      "깨끗해요", "직원 친절", "위치 최고", "가성비",
-      "다시 오고 싶어요", "조용함", "수압 세네요", "아늑해요"
+      "청결", "친절", "위치", "가격",
+      "침구", "시설", "뷰", "주차",
+      "가족", "수영장", "냉난방", "방음"
     ];
 
     const keywords = baseKeywords.map((word, idx) => {
@@ -97,7 +102,7 @@ function ReportIndex({ currentUser }) {
         const data = generateLineChartData();
         return (
           <>
-            <div className="text-sm text-[#888] mb-4">최근 월별 매출 변화입니다.</div>
+            <div className="text-sm text-[#888] mb-4">최근 일주일별 매출 변화입니다.</div>
             {renderLineChart(data)}
           </>
         );
@@ -139,9 +144,8 @@ function ReportIndex({ currentUser }) {
               {/* 워드클라우드 이미지 */}
               <div className="w-full lg:w-1/2 flex items-center justify-center">
                 <img
-                  src="/818527b8-b952-4e3d-87a3-8a9da2195a5a.png"
+                  src="/icons/wordcloud.png"
                   alt="워드클라우드"
-                  className="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm"
                 />
               </div>
             </div>
@@ -159,6 +163,11 @@ function ReportIndex({ currentUser }) {
               <li>가족 고객 비율: 전체의 35%</li>
               <li>고객 재방문율: 22%</li>
               <li>가장 인기 있는 객실 타입: 디럭스룸</li>
+              <li>예약 시기: 체크인 7일 전 예약이 45%로 가장 많음</li>
+              <li>예약 취소율: 8%</li>
+              <li>고객 성별 비율: 남성 48%, 여성 52%</li>
+              <li>고객 연령대: 20대 15%, 30대 25%, 40대 35%, 50대 이상 25%</li>
+              <li>평균 숙박 일수: 1.8일</li>
             </ul>
           </div>
         );
@@ -170,7 +179,7 @@ function ReportIndex({ currentUser }) {
 
   return (
     <Layout>
-      <div className="px-6 py-5 w-full min-h-screen">
+      <div className="px-6 py-5 w-full min-h-screen bg-white">
         <main className="w-full">
           <h1 className="text-3xl font-bold text-[#222] mb-2">통계/분석</h1>
           <p className="text-[#888] mb-8">호텔의 성과를 파악할 수 있는 통계와 분석자료입니다.</p>
@@ -182,8 +191,10 @@ function ReportIndex({ currentUser }) {
                 <button
                   key={type}
                   onClick={() => setSelectedReport(type)}
-                  className={`px-4 py-2 rounded-lg border ${
-                    selectedReport === type ? "bg-[#e8edf2] text-black" : "bg-white text-[#888] border-[#E5E7EB]"
+                  className={`px-4 py-2 rounded-lg ${
+                    selectedReport === type
+                      ? "bg-[#fcefdc] text-black" // ✅ 선택된 버튼: 테두리 없음
+                      : "bg-white text-[#888] border border-[#e5e7eb]" // ✅ 비선택 버튼: 연한 테두리
                   }`}
                 >
                   {type}
@@ -219,7 +230,7 @@ function ReportIndex({ currentUser }) {
 
             <button
               onClick={handleGenerateReport}
-              className="w-full bg-[#e8edf2] text-black py-3 rounded-lg font-medium"
+              className="w-full bg-[#f59e0b] text-white py-3 rounded-lg font-medium"
             >
               리포트 생성하기
             </button>

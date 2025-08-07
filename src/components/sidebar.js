@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -8,6 +9,8 @@ import {
   FaStar,
   FaUserFriends,
   FaCog,
+  FaGlobe,
+  FaQuestionCircle 
 } from "react-icons/fa";
 
 function Menu({ text, url, icon, active }) {
@@ -15,7 +18,7 @@ function Menu({ text, url, icon, active }) {
     <Link href={url || "#"} passHref>
       <div
         className={`flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer w-full
-          ${active ? "bg-gray-100 text-black font-semibold" : "text-gray-500 hover:bg-gray-100"}
+          ${active ? "bg-orange-100 text-black font-semibold" : "text-gray-500 hover:bg-sky-100"}
         `}
       >
         <span className={`text-xl ${active ? "text-black" : "text-gray-400"}`}>
@@ -32,7 +35,7 @@ export default function LeftNavigationBar() {
   const currentPath = router.asPath;
 
   return (
-    <div className="flex flex-col min-h-[800px] items-start relative self-stretch w-full bg-white">
+    <div className="flex flex-col h-screen bg-[#FFFCF7]">
       {/* 로고 클릭 시 대시보드로 이동 */}
       <Link href="/dashboard">
         <div className="flex items-center gap-3 px-6 py-5 cursor-pointer">
@@ -43,7 +46,7 @@ export default function LeftNavigationBar() {
 
       <div className="flex flex-col gap-2 px-2 w-full">
         <Menu text="대시보드" url="/dashboard" icon={<FaHome />} active={currentPath === "/dashboard"} />
-        <Menu text="매장관리" url="/store" icon={<FaCalendarAlt />} active={currentPath === "/store"} />
+        <Menu text="플랫폼관리" url="/store" icon={<FaGlobe />} active={currentPath === "/store"} />
         <Menu text="예약관리" url="/reservation" icon={<FaCalendarAlt />} active={currentPath === "/reservation"} />
         <Menu text="객실관리" url="/room" icon={<FaBed />} active={currentPath === "/room"} />
         <Menu text="통계/분석" url="/report" icon={<FaChartBar />} active={currentPath === "/report"} />
@@ -51,6 +54,11 @@ export default function LeftNavigationBar() {
         <Menu text="내 정보" url="/myinfo" icon={<FaUserFriends />} active={currentPath === "/myinfo"} />
         <Menu text="설정" url="/settings" icon={<FaCog />} active={currentPath === "/settings"} />
       </div>
+
+      <div className="mt-auto px-2 py-4 w-full flex flex-col gap-2">
+        <Menu text="도움이 필요하신가요?" url="/support" icon={<FaQuestionCircle />} active={currentPath === "/support"} />
+      </div>
+      
     </div>
   );
 }

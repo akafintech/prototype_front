@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,15 +36,14 @@ function MyInfoIndex() {
       } else {
         alert(`업데이트 실패: ${data.message || "알 수 없는 오류"}`);
       }
-    }else {
+    } else {
       alert("비밀번호를 입력해주세요.");
     }
-  }
-
+  };
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#F6F8FB] flex">
+      <div className="min-h-screen bg-white flex">
         <main className="flex-1 w-full max-w-2xl mx-auto px-8 py-10">
           <h1 className="text-3xl font-bold text-[#222] mb-2">내 정보 관리</h1>
           <p className="text-[#888] mb-8">개인 정보를 관리하고 계정 설정을 변경할 수 있습니다.</p>
@@ -57,7 +56,7 @@ function MyInfoIndex() {
                 type="email"
                 placeholder="example@example.com"
                 value={registerData.email}
-                readonly
+                readOnly
               />
             </div>
 
@@ -68,19 +67,19 @@ function MyInfoIndex() {
                 type="text"
                 placeholder="김몽"
                 value={registerData.username}
-                onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}  
+                onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
               />
             </div>
 
             {/* Current Password Field */}
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-[#222] w-32">현재 비밀번호</label>
-              <Input 
-                type="password" 
+              <Input
+                type="password"
                 placeholder="현재 비밀번호를 입력해주세요"
                 value={registerData.password}
-                onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })} 
-                />
+                onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+              />
             </div>
 
             {/* Change Password Field */}
@@ -123,8 +122,8 @@ function MyInfoIndex() {
 
           {/* Save Changes Button */}
           <div className="pt-6">
-            <button 
-              className="w-full py-3 bg-[#e8edf2] text-black rounded-lg hover:bg-[#d1d8e0] font-medium"
+            <button
+              className="w-full py-3 bg-[#f59e0b] text-white rounded-lg hover:bg-[#cc5500] font-medium"
               onClick={handleSave}>
               변경사항 저장하기
             </button>

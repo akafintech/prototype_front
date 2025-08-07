@@ -55,7 +55,7 @@ export default function StoreManagePage() {
     console.log("Add store ok:",ok);
     console.log("Add store data:", data);
     if (!ok) {
-      alert(data.detail || "매장 등록에 실패하였습니다.");
+      alert(data.detail || "플랫폼 등록에 실패하였습니다.");
       setLoading(false);
       return;1
     }
@@ -77,77 +77,79 @@ export default function StoreManagePage() {
 
   return (
     <Layout>
-      <div className="max-w-xl mx-auto py-10">
-        <h1 className="text-2xl font-bold mb-6">매장 관리</h1>
-        <button
-          className="mb-6 bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleOpenModal}
-        >
-          매장 등록
-        </button>
+      <div className="bg-white min-h-screen w-full">
+        <div className="max-w-xl mx-auto py-10">
+          <h1 className="text-2xl font-bold mb-6">플랫폼 관리</h1>
+          <button
+            className="mb-6 bg-[#d97706] text-white px-4 py-2 rounded"
+            onClick={handleOpenModal}
+          >
+            플랫폼 등록
+          </button>
 
-        {/* 매장 등록 모달 */}
-        {showModal && (
-          <div className="flex items-center justify-center bg-white bg-opacity-100">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
-              <h2 className="text-xl font-semibold mb-4">매장 등록</h2>
-              <form onSubmit={handleModalSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm mb-1">매장 이름</label>
-                  <input
-                    type="text"
-                    value={modalStoreName}
-                    onChange={e => setModalStoreName(e.target.value)}
-                    className="w-full border px-3 py-2 rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm mb-1">사업자 번호</label>
-                  <input
-                    type="text"
-                    value={modalBusinessNumber}
-                    onChange={e => setModalBusinessNumber(e.target.value)}
-                    maxLength={10}
-                    className="w-full border px-3 py-2 rounded"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded bg-gray-200"
-                    onClick={handleCloseModal}
-                    disabled={loading}
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-blue-500 text-white"
-                    disabled={loading}
-                  >
-                    등록
-                  </button>
-                </div>
-              </form>
+          {/* 플랫폼 등록 모달 */}
+          {showModal && (
+            <div className="flex items-center justify-center bg-white bg-opacity-100">
+              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
+                <h2 className="text-xl font-semibold mb-4">플랫폼 등록</h2>
+                <form onSubmit={handleModalSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm mb-1">플랫폼 이름</label>
+                    <input
+                      type="text"
+                      value={modalStoreName}
+                      onChange={e => setModalStoreName(e.target.value)}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-1">사업자 번호</label>
+                    <input
+                      type="text"
+                      value={modalBusinessNumber}
+                      onChange={e => setModalBusinessNumber(e.target.value)}
+                      maxLength={10}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded bg-gray-200"
+                      onClick={handleCloseModal}
+                      disabled={loading}
+                    >
+                      취소
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded bg-blue-500 text-white"
+                      disabled={loading}
+                    >
+                      등록
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {loading ? (
-          <div>로딩 중...</div>
-        ) : (
-          <ul className="space-y-2">
-            {stores.length > 0 ? (
-              stores.map(store => (
-                <StoreCard key={store.id} store={store} onDelete={handleDeleteStore} />
-              ))
-            ) : (
-              <li>등록된 매장이 없습니다.</li>
-            )}
-          </ul>
-        )}
+          {loading ? (
+            <div>로딩 중...</div>
+          ) : (
+            <ul className="space-y-2">
+              {stores.length > 0 ? (
+                stores.map(store => (
+                  <StoreCard key={store.id} store={store} onDelete={handleDeleteStore} />
+                ))
+              ) : (
+                <li>등록된 플랫폼이 없습니다.</li>
+              )}
+            </ul>
+          )}
+        </div>
       </div>
     </Layout>
   );
