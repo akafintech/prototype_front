@@ -4,18 +4,18 @@ import Layout from "@/components/Layout";
 function Settings() {
   const [darkMode, setDarkMode] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
+  const [kakaoNotifications, setKakaoNotifications] = useState(false); // 새 상태 추가
   const [language, setLanguage] = useState("ko");
-  const [autoLogout, setAutoLogout] = useState(30); // 분 단위
+  const [autoLogout, setAutoLogout] = useState(30);
 
   const handleSave = (e) => {
     e.preventDefault();
     alert("설정이 저장되었습니다.");
-    // 실제 저장 로직은 API 연동 필요
   };
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#F6F8FB] flex justify-center items-center">
+      <div className="bg-[#F6F8FB] flex justify-center pt-16 pb-10">
         <form
           onSubmit={handleSave}
           className="bg-white rounded-xl shadow p-8 w-full max-w-lg space-y-8"
@@ -25,6 +25,8 @@ function Settings() {
           {/* 알림 설정 */}
           <div>
             <label className="block mb-2 font-medium">알림 설정</label>
+
+            {/* 이메일 알림 */}
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -35,6 +37,20 @@ function Settings() {
               />
               <label htmlFor="emailNotifications" className="text-gray-700">
                 이메일 알림 받기
+              </label>
+            </div>
+
+            {/* 카카오톡 알림 */}
+            <div className="flex items-center gap-3 mt-2">
+              <input
+                type="checkbox"
+                checked={kakaoNotifications}
+                onChange={() => setKakaoNotifications((v) => !v)}
+                id="kakaoNotifications"
+                className="mr-2"
+              />
+              <label htmlFor="kakaoNotifications" className="text-gray-700">
+                카카오톡 알림 받기
               </label>
             </div>
           </div>
@@ -58,7 +74,7 @@ function Settings() {
             <select
               className="w-full border border-[#E5E7EB] rounded-lg px-4 py-2"
               value={language}
-              onChange={e => setLanguage(e.target.value)}
+              onChange={(e) => setLanguage(e.target.value)}
             >
               <option value="ko">한국어</option>
               <option value="en">영어</option>
@@ -72,7 +88,7 @@ function Settings() {
             <select
               className="w-full border border-[#E5E7EB] rounded-lg px-4 py-2"
               value={autoLogout}
-              onChange={e => setAutoLogout(Number(e.target.value))}
+              onChange={(e) => setAutoLogout(Number(e.target.value))}
             >
               <option value={5}>5분</option>
               <option value={15}>15분</option>

@@ -448,11 +448,11 @@ function ReviewIndex() {
                                         className="bg-blue-500 h-2 rounded-full relative"
                                         style={{ width: `${ratingPercents[idx]}%` }}
                                     >
-                                        {rating === 3 && (
+                                        {/* {rating === 3 && (
                                             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
                                                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-red-500"></div>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                                 <span className="w-12 text-sm text-[#888] text-right">
