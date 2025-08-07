@@ -96,7 +96,7 @@ function Settings() {
 
             <button
               type="submit"
-              className="w-full bg-[#d97706] text-white py-2 rounded-lg font-semibold hover:bg-[#cc5500]"
+              className="w-full bg-[#f59e0b] text-white py-2 rounded-lg font-semibold hover:bg-[#cc5500]"
             >
               저장
             </button>
