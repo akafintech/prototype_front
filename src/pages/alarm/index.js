@@ -98,7 +98,7 @@ export default function AlarmReviewPage() {
               총 불만 리뷰{" "}
               <span className="text-blue-600 font-bold">{reviews.length}</span>건
             </div>
-            <div className="text-sm text-gray-500">답변을 빠르게 남겨보세요.</div>
+            <div className="text-sm text-gray-500">불만 리뷰에 대한 답변을 빠르게 남겨보세요.</div>
           </div>
 
           <div className="space-y-6">
