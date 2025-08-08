@@ -81,84 +81,88 @@ export default function AlarmReviewPage() {
   };
 
   return (
-    <div className="flex bg-[#F6F8FB] min-h-screen">
-      {/* 사이드바 */}
-      <Sidebar />
+    <>
+      {/* 사이드바는 고정 */}
+      <div className="fixed top-0 left-0 h-screen w-80 bg-[#FFFCF7] shadow z-40">
+        <Sidebar />
+      </div>
 
-      {/* 본문 */}
-      <main className="flex-1 px-10 py-10">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-[#222] mb-2">불만 리뷰 알림</h1>
-          <p className="text-[#888] mb-4">
-            고객 불만 리뷰를 확인하고, 답변을 등록할 수 있습니다.
-          </p>
+      {/* 본문은 왼쪽 사이드바만큼 오른쪽으로 이동 */}
+      <div className="flex bg-[#F6F8FB] min-h-screen ml-60">
+        <main className="bg-white flex-1 px-10 py-10">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold text-[#222] mb-2">불만 리뷰 알림</h1>
+            <p className="text-[#888] mb-4">
+              고객 불만 리뷰를 확인하고, 답변을 등록할 수 있습니다.
+            </p>
 
-          <div className="bg-white rounded-lg shadow p-4 mb-8 flex items-center justify-between">
-            <div className="text-[#222] font-medium">
-              총 불만 리뷰{" "}
-              <span className="text-blue-600 font-bold">{reviews.length}</span>건
+            <div className="bg-white rounded-lg shadow p-4 mb-8 flex items-center justify-between">
+              <div className="text-[#222] font-medium">
+                총 불만 리뷰{" "}
+                <span className="text-blue-600 font-bold">{reviews.length}</span>건
+              </div>
+              <div className="text-sm text-gray-500">불만 리뷰에 대한 답변을 빠르게 남겨보세요.</div>
             </div>
-            <div className="text-sm text-gray-500">불만 리뷰에 대한 답변을 빠르게 남겨보세요.</div>
-          </div>
 
-          <div className="space-y-6">
-            {reviews.map((r) => (
-              <div key={r.id} className="bg-white rounded-xl shadow p-6 mb-4">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-6 h-6 text-gray-600"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-medium text-[#222]">{r.nickname}</div>
-                      <div className="flex text-yellow-400 text-sm">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span key={star}>{star <= r.rating ? "★" : "☆"}</span>
-                        ))}
+            <div className="space-y-6">
+              {reviews.map((r) => (
+                <div key={r.id} className="bg-white rounded-xl shadow p-6 mb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-gray-600"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-medium text-[#222]">{r.nickname}</div>
+                        <div className="flex text-yellow-400 text-sm">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span key={star}>{star <= r.rating ? "★" : "☆"}</span>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <div className="text-sm text-gray-500">{r.date}</div>
                   </div>
-                  <div className="text-sm text-gray-500">{r.date}</div>
+
+                  <p className="text-[#222] mb-3">{r.content}</p>
+
+                  <textarea
+                    placeholder="답변을 입력해주세요."
+                    className="w-full h-28 p-4 border border-gray-300 rounded-lg resize-none"
+                    value={r.reply}
+                    onChange={(e) => handleReplyChange(r.id, e.target.value)}
+                  />
+
+                  <div className="flex justify-end mt-2 gap-2">
+                    <button
+                      onClick={() => handleGenerate(r.id)}
+                      className="px-4 py-2 bg-white border border-[#E5E7EB] text-black rounded-lg text-sm"
+                    >
+                      답변 생성
+                    </button>
+                    <button
+                      onClick={() => handleSubmit(r.id)}
+                      className="px-4 py-2 bg-[#fcefdc] text-black rounded-lg text-sm"
+                    >
+                      답변 등록
+                    </button>
+                  </div>
                 </div>
-
-                <p className="text-[#222] mb-3">{r.content}</p>
-
-                <textarea
-                  placeholder="답변을 입력해주세요."
-                  className="w-full h-28 p-4 border border-gray-300 rounded-lg resize-none"
-                  value={r.reply}
-                  onChange={(e) => handleReplyChange(r.id, e.target.value)}
-                />
-
-                <div className="flex justify-end mt-2 gap-2">
-                  <button
-                    onClick={() => handleGenerate(r.id)}
-                    className="px-4 py-2 bg-white border border-[#E5E7EB] text-black rounded-lg text-sm"
-                  >
-                    답변 생성
-                  </button>
-                  <button
-                    onClick={() => handleSubmit(r.id)}
-                    className="px-4 py-2 bg-[#fcefdc] text-black rounded-lg text-sm"
-                  >
-                    답변 등록
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
