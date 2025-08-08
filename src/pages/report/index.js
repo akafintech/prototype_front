@@ -65,7 +65,7 @@ function ReportIndex({ currentUser }) {
   };
 
   const renderLineChart = (data) => (
-    <div className="w-full h-64 bg-[#f5f8fa] rounded-lg px-6 py-4 overflow-x-auto">
+    <div className="w-full h-64 bg-[#fff7ed] rounded-lg px-6 py-4 overflow-x-auto">
       <svg viewBox={`0 0 ${data.length * 50} 200`} className="w-full h-full">
         <polyline
           fill="none"
@@ -113,7 +113,7 @@ function ReportIndex({ currentUser }) {
         const extra = keywords.slice(5);
 
         return (
-          <div className="w-full bg-[#F0F4F8] rounded-lg p-6 text-sm text-[#333]">
+          <div className="w-full bg-[#fff7ed] rounded-lg p-6 text-sm text-[#333]">
             <h3 className="font-semibold mb-4">주요 키워드 언급량</h3>
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="flex-1">
